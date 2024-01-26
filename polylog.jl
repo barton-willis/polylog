@@ -91,7 +91,7 @@ function polylog2_helper(x::Number)
     w0 = x/(x-2)^3 #hoist two constants by hand
 	w1 = (x-2)^2
     while k < N && streak < 5 #magic number 5
-      #q3 = (-(k+1)*(k+2)*q0*x^3+(k+2)^2*q1*(x-2)*x^2+(k+3)*(k+4)*q2*(x-2)^2*x)/((k+4)^2*(x-2)^3)
+      #was q3 = (-(k+1)*(k+2)*q0*x^3+(k+2)^2*q1*(x-2)*x^2+(k+3)*(k+4)*q2*(x-2)^2*x)/((k+4)^2*(x-2)^3)
 	  q3 = w0*((x*(k+2)* ((k+2)*q1*(x-2)-(k+1)*q0*x)) +w1*(k+3)*(k+4)*q2)/((k+4)^2)
 	  qq3 = q3-ks #start Kahan summation
 	  t = h+qq3 
