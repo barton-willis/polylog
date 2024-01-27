@@ -59,6 +59,10 @@ function polylog2(x::Number)
 	end 
 end
 
+# This function optionally uses a polylog2 function identity before
+# it calls polylog2_helper. This is not intended to be a user level 
+# function. Presumably, it chooses the identity to gain speed and
+# accuracy.
 function polylog2_transform(x::Number)
 	T = typeof(x)
 	cnd = x -> if x == 2 Inf else abs2(x/(2-x)) end
