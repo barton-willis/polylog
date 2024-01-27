@@ -1,9 +1,10 @@
 # Barton Willis, Copyright 2019, 2024
 
-# This work is licensed under the CC0 1.0 Universal license
+# This work is licensed under the CC0 1.0 Universal license.
+
 # Julia code for the evaluation of the dilogarithm. The method is
 # based on "The binomial transform of p-recursive sequences and 
-# dilogarithm function," Stephanie Harshbarger and Barton Willis.
+# dilogarithm function," by Stephanie Harshbarger and Barton Willis.
 # https://arxiv.org/pdf/1910.06928.pdf
 
 # Extend eps.
@@ -30,27 +31,35 @@ BigFloat(x::Complex) = BigFloat(real(x)) + BigFloat(imag(x))im
     polylog2(x)
 
 Compute the numeric value of the dilogarithm. For a definition of this function,
-see http://dlmf.nist.gov/25.12.E1 . The function returns a four tuple of the 
-for (dilogarithm(x), cnd, n, bool), where cnd is the condition sum that is used
-for evalution, n is the number of terms summed, and bool is a boolean that 
-indicates sucess or failure.
+see http://dlmf.nist.gov/25.12.E1. 
 
+Examples:
 ```
-julia> polylog2(1.01)
-julia> (1.700732144324037 - 0.03125988630910074im, 2.2149194678541363e-18, 9, true)
+julia> polylog2(0.125)
+julia> 0.1291398601099534
 
 The input can be a complex number:
 julia> polylog2(3.1 + 5.1*im)
-julia> -1.0831276752057937 + 3.9312546561253905im, 1.8745409421641466e-17 + 3.595690852077723e-17im, 17, true)
+julia> -1.0831276752057937 + 3.9312546561253905im
 
 Finally, the input can be a BigFloat:
 
-julia> polylog2(BigFloat(1.01))
-julia> (1.700732144324037086378889112827585843561092568405653427462945581660835230870607 - 0.03125988630910073633439461464037805326512443369418564280068429886030330779614308im, 1.722934710961044873101367377667284112099228890489560282524331651371580237533837e-79, 36, true)
-
+julia> setprecision(BigFloat,80);
+julia> polylog2(BigFloat(1.125))
+julia> 2.0111536328199939813507146 - 0.37002631953559893136557418im
 ```
 """
 function polylog2(x::Number)
+	# call polylog2_transform & check for sucess
+	f = polylog2_transform(x::Number)
+	if f[4]
+		f[1]
+	else
+		error("Unable to evaluate(polylog2(", x, ")")
+	end 
+end
+
+function polylog2_transform(x::Number)
 	T = typeof(x)
 	cnd = x -> if x == 2 Inf else abs2(x/(2-x)) end
 	c0 = cnd(x)
