@@ -28,7 +28,7 @@ eps(x::Type{Complex{BigFloat}}) = eps(BigFloat)
 BigFloat(x::Complex) = BigFloat(real(x)) + BigFloat(imag(x))im
 
 """
-    polylog2(x)
+    polylog2(x::Number)
 
 Compute the numeric value of the dilogarithm. For a definition of this function,
 see http://dlmf.nist.gov/25.12.E1. 
@@ -50,7 +50,7 @@ julia> 2.0111536328199939813507146 - 0.37002631953559893136557418im
 ```
 """
 function polylog2(x::Number)
-	# call polylog2_transform & check for sucess
+	# call polylog2_transform & check for success
 	f = polylog2_transform(x::Number)
 	if f[4]
 		f[1]

@@ -1,0 +1,17 @@
+{
+    "spellright.language": [
+        "en"
+    ],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "lisp",
+        "plaintext",
+        "mac"
+    ],
+    "spellright.parserByClass": {
+        "mac": {
+            "parser": "code"
+        }
+    }
+}
