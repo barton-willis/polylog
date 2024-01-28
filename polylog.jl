@@ -111,8 +111,7 @@ function polylog2_helper(q0::Number, x::Number)
 	#was q0 = x/(1-x/2)
     q1 = -q0^2/4 # was -x^2/(4*(1-x/2)^2)
 	q2 = q0^3/9  # was x^3/(9*(1-x/2)^3)
-    h = q0+(q1+q2)
-	
+	h = @evalpoly(q0, 0, 1,-1/4, 1/9) #was h = q0+(q1+q2)
 	N = convert(Int64, 2^24) #magic number--it is a power of two for no particular reason
     k = zero(N)
     streak = zero(N)
