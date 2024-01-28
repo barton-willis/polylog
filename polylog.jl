@@ -59,6 +59,14 @@ function polylog2(x::Number)
 	end 
 end
 
+function mylog(x::Number)
+	if isreal(x) && x > 0
+		log(x)
+	else 
+		log(Complex(x))	
+	end
+end
+
 # This function optionally uses a polylog2 function identity before
 # it calls polylog2_helper. This is not intended to be a user level 
 # function. Presumably, it chooses the identity to gain speed and
@@ -86,11 +94,11 @@ function polylog2_transform(x::Number)
 	elseif cmin == c1 #do x -> 1/x transformation
 		q0 = 1/(x-1/2)
 		f = polylog2_helper(q0,1/x)
-		-f[1] - convert(T, pi^2/6) - log(Complex(-x))^2/2,f[2], f[3], f[4]
+		-f[1] - convert(T, pi^2/6) - mylog(-x)^2/2,f[2], f[3], f[4]
 	else #do x -> 1-x transformation
 		q0 = 2*((1-x)/(1+x))
 		f = polylog2_helper(q0,1-x)
-		-f[1] + convert(T, pi^2/6) - log(Complex(x))*log(Complex(1-x)),f[2], f[3], f[4]
+		-f[1] + convert(T, pi^2/6) - mylog(x)*mylog(1-x),f[2], f[3], f[4]
 	end
 end
 	

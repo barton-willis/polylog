@@ -2,6 +2,21 @@ function rd(a,b)
    floor(Int64, abs(a-b)/(eps(typeof(a)) * max(1,abs(a),abs(b))))
 end
 
+function test_report(results)
+   Q = sort(collect(results), by=x->x[1])
+   s = 0
+   n = 0
+   w = 0
+   for x in Q 
+      n += x[2]
+      s += x[1]*x[2]
+      w = max(w,x[1])
+   end
+   println("number of tests = ", n)
+   println("average error = ",n/s)
+   println("worst error = ",w)
+end
+
 # Test the identity http://dlmf.nist.gov/25.12.E3 .
 # This identity is valid off [1,infty). For a input in [1,infy),
 # return true.
@@ -22,7 +37,7 @@ function polylog2_test1(n)
        results[q] = if haskey(results,q) results[q]+1 else 1 end
        n -= 1
    end
-   sort(collect(results), by=x->x[1])
+   test_report(results)
 end
 
 # Test dlmf_25_12_3_E3 on the unit circle
@@ -34,7 +49,7 @@ function polylog2_test2(n)
        results[q] = if haskey(results,q) results[q]+1 else 1 end
        n -= 1
    end
-   sort(collect(results), by=x->x[1])
+   test_report(results)
 end
 
 # http://dlmf.nist.gov/25.12.E5
@@ -61,7 +76,7 @@ function polylog2_test3(n)
        results[q] = if haskey(results,q) results[q]+1 else 1 end
        n -= 1
    end
-   sort(collect(results), by=x->x[1])
+   test_report(results)
 end
 
 #http://dlmf.nist.gov/25.12.E7
@@ -84,7 +99,7 @@ function polylog2_test4(n)
        results[q] = if haskey(results,q) results[q]+1 else 1 end
        n -= 1
    end
-   sort(collect(results), by=x->x[1])
+   test_report(results)
 end
 
 #See https://en.wikipedia.org/wiki/Dilogarithm
@@ -100,5 +115,5 @@ function polylog2_test5(n)
        results[q] = if haskey(results,q) results[q]+1 else 1 end
        n -= 1
    end
-   sort(collect(results), by=x->x[1])
+   test_report(results)
 end
