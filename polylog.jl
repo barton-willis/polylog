@@ -92,6 +92,7 @@ end
 # number of terms summed, and a boolean that indicates sucess or failure.
 function polylog2_helper(q0::Number, x::Number)
 	T = typeof(x)
+	# until I'm convinced this is correct, leave in the assert.
 	@assert(isapprox(q0,x/(1-x/2), atol=4*eps(T), rtol=4*eps(T)))
 	#was q0 = x/(1-x/2)
     q1 = -q0^2/4 # was -x^2/(4*(1-x/2)^2)
