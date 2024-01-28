@@ -1,3 +1,7 @@
+function rd(a,b)
+   floor(Int64, abs(a-b)/(eps(typeof(a)) * max(1,abs(a),abs(b))))
+end
+
 # Test the identity http://dlmf.nist.gov/25.12.E3 .
 # This identity is valid off [1,infty). For a input in [1,infy),
 # return true.
@@ -5,7 +9,32 @@ function dlmf_25_12_3_E3(x)
    if imag(x)==0 && x >= 1
       true
    else
-     isapprox(polylog2(x) + polylog2(x/(x-1)), -log(1-x)^2 / 2, rtol = 16*eps(x))
+     rd(polylog2(x) + polylog2(x/(x-1)), -log(1-x)^2 / 2)
+   end
+end
+
+# Test dlmf_25_12_3_E3 inside the unit cirle.
+function polylog2_test1(n)
+   results = Dict()
+   while n > 0
+       x = rand() * cis(2*pi*rand())
+       q = dlmf_25_12_3_E3(x)
+       results[q] = if haskey(results,q) results[q]+1 else 1 end
+       n -= 1
+   end
+   sort(collect(results), by=x->x[1])
+end
+
+# Test dlmf_25_12_3_E3 on the unit circle
+function polylog2_test2(n)
+   results = Dict()
+   while n > 0
+       x = cis(2*pi*rand())
+       q = dlmf_25_12_3_E3(x)
+       results[q] = if haskey(results,q) results[q]+1 else 1 end
+       n -= 1
+   end
+   sort(collect(results), by=x->x[1])
 end
 
 # http://dlmf.nist.gov/25.12.E5
@@ -17,22 +46,59 @@ function dlmf_25_12_E5(z,m::Int64)
          s += polylog2(z*cis(2*pi*k/m))
          k += 1
       end
-      isapprox(polylog2(z^m), m*s, atol = 16*eps(z), rtol = 16*eps(z))
+      rd(polylog2(z^m), m*s)
    else
       true
    end
 end
 
+function polylog2_test3(n)
+   results = Dict()
+   while n > 0
+       x = rand()*cis(2*pi*rand())
+       k = rand
+       q = dlmf_25_12_E5(x,rand(1:4))
+       results[q] = if haskey(results,q) results[q]+1 else 1 end
+       n -= 1
+   end
+   sort(collect(results), by=x->x[1])
+end
+
 #http://dlmf.nist.gov/25.12.E7
 function dlmf_25_12_E7(x)
    if 0 <= x && x <= 2*pi
-     isapprox(real(polylog2(cis(x))), pi^2/6 - pi*x/2 + x^2/4,atol= 65*eps(x), rtol = 16*eps(x))
+     rd(real(polylog2(cis(x))), pi*(pi/6 - x/2) + x^2/4)
    else 
       true
    end
 end
 
+function polylog2_test4(n)
+   results = Dict()
+   while n > 0
+       x = 2*pi*rand()
+       q =  dlmf_25_12_E7(x)
+       if q > 200
+         @show(x, polylog2(cis(x)))
+       end
+       results[q] = if haskey(results,q) results[q]+1 else 1 end
+       n -= 1
+   end
+   sort(collect(results), by=x->x[1])
+end
+
 #See https://en.wikipedia.org/wiki/Dilogarithm
 function polylog2_id_1(x)
-   isapprox(polylog2(x)+polylog2(-x),polylog2(x^2)/2, atol= 16*eps(x), rtol=eps(x))
+   rd(polylog2(x)+polylog2(-x),polylog2(x^2)/2)
+end
+
+function polylog2_test5(n)
+   results = Dict()
+   while n > 0
+       x = 2.0 * rand() * cis(2*pi*rand())
+       q =  polylog2_id_1(x)
+       results[q] = if haskey(results,q) results[q]+1 else 1 end
+       n -= 1
+   end
+   sort(collect(results), by=x->x[1])
 end

@@ -39,14 +39,14 @@ julia> polylog2(0.125)
 julia> 0.1291398601099534
 
 The input can be a complex number:
-julia> polylog2(3.1 + 5.1*im)
-julia> -1.0831276752057937 + 3.9312546561253905im
+julia>  polylog2(0.5 + 128.0*im)
+julia> -12.176241112881845 + 7.648328923834815im
 
 Finally, the input can be a BigFloat:
 
-julia> setprecision(BigFloat,80);
-julia> polylog2(BigFloat(1.125))
-julia> 2.0111536328199939813507146 - 0.37002631953559893136557418im
+julia> setprecision(BigFloat,128);
+julia> polylog2(BigFloat(0.125))
+julia> 0.1291398601099534056689353043446094486239
 ```
 """
 function polylog2(x::Number)
@@ -90,8 +90,8 @@ end
 function polylog2_helper(x::Number)
 	T = typeof(x)
 	q0 = x/(1-x/2)
-    q1 = -x^2/(4*(1-x/2)^2)
-	q2 = x^3/(9*(1-x/2)^3)
+    q1 = -q0^2/4 # was -x^2/(4*(1-x/2)^2)
+	q2 = q0^3/9  # was x^3/(9*(1-x/2)^3)
     h = q0+(q1+q2)
 	
 	N = convert(Int64, 2^24) #magic number--it is a power of two for no particular reason
