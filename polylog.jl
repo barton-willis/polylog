@@ -59,6 +59,9 @@ function polylog2(x::Number)
 	end 
 end
 
+# When x in (0,infinity) return log(x); otherwise, convert x to 
+# a complex and then dispatch log. This helps prevent some X + 0.0im
+# results.
 function mylog(x::Number)
 	if isreal(x) && x > 0
 		log(x)
