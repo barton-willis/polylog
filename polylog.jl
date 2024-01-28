@@ -63,11 +63,17 @@ end
 # it calls polylog2_helper. This is not intended to be a user level 
 # function. Presumably, it chooses the identity to gain speed and
 # accuracy.
+
+# The polylog2 function has functional relations for x --> 1/x, 
+# x --> 1/(1-x), x --> (x-1)/x, and x --> 1-x. But the convergence
+# rate, given by cnd,  is the same for x --> 1/x & x --> 1/(1-x)
+# and the same for x --> (x-1)/x & x --> 1-x. So we only choose
+# betwen using x --> x, x --> 1/x, and x --> 1-x.
 function polylog2_transform(x::Number)
 	T = typeof(x)
 	cnd = x -> if x == 2 Inf else abs2(x/(2-x)) end
 	c0 = cnd(x)
-	c1 = if abs2(x) <= 1 Inf else cnd(1/x) end #only do 1/x transform for x outside unit cirle.
+	c1 = if x == 1 Inf else cnd(1/x) end #only do 1/x transform for x outside unit cirle.
 	c2 = cnd(1-x)
 	cmin = min(c0,c1,c2)
 	if x == 0
