@@ -75,21 +75,25 @@ function polylog2_transform(x::Number)
 	elseif x == 1
 		convert(T, pi^2/6), convert(T,0), 0, true
 	elseif cmin == c0 #no transformation
-		polylog2_helper(x)
+		q0 = x/(1-x/2)
+		polylog2_helper(q0,x)
 	elseif cmin == c1 #do x -> 1/x transformation
-		f = polylog2_helper(1/x)
+		q0 = 1/(x-1/2)
+		f = polylog2_helper(q0,1/x)
 		-f[1] - convert(T, pi^2/6) - log(Complex(-x))^2/2,f[2], f[3], f[4]
 	else #do x -> 1-x transformation
-		f = polylog2_helper(1-x)
+		q0 = 2*((1-x)/(1+x))
+		f = polylog2_helper(q0,1-x)
 		-f[1] + convert(T, pi^2/6) - log(Complex(x))*log(Complex(1-x)),f[2], f[3], f[4]
 	end
 end
 	
 # return value of polylog(2,x), the condition number of the sum, the 
 # number of terms summed, and a boolean that indicates sucess or failure.
-function polylog2_helper(x::Number)
+function polylog2_helper(q0::Number, x::Number)
 	T = typeof(x)
-	q0 = x/(1-x/2)
+	@assert(isapprox(q0,x/(1-x/2), atol=4*eps(T), rtol=4*eps(T)))
+	#was q0 = x/(1-x/2)
     q1 = -q0^2/4 # was -x^2/(4*(1-x/2)^2)
 	q2 = q0^3/9  # was x^3/(9*(1-x/2)^3)
     h = q0+(q1+q2)
