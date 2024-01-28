@@ -73,7 +73,7 @@ function polylog2_transform(x::Number)
 	T = typeof(x)
 	cnd = x -> if x == 2 Inf else abs2(x/(2-x)) end
 	c0 = cnd(x)
-	c1 = if x == 1 Inf else cnd(1/x) end #only do 1/x transform for x outside unit cirle.
+	c1 = if x == 0 Inf else cnd(1/x) end 
 	c2 = cnd(1-x)
 	cmin = min(c0,c1,c2)
 	if x == 0
