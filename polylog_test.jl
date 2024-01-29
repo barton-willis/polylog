@@ -15,6 +15,7 @@ function test_report(results)
    println("number of tests = ", n)
    println("average error = ",n/s)
    println("worst error = ",w)
+   Q
 end
 
 # Test the identity http://dlmf.nist.gov/25.12.E3 .
