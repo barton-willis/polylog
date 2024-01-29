@@ -13,7 +13,7 @@ function test_report(results)
       w = max(w,x[1])
    end
    println("number of tests = ", n)
-   println("average error = ",n/s)
+   println("average error = ",s/n)
    println("worst error = ",w)
    Q
 end
