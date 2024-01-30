@@ -114,7 +114,7 @@ function polylog2_helper(q0::Number, x::Number)
 	s1 = s0^2
 	s2 = s0^3
 
-    while k < N && streak < 5 #magic number 5
+    while k < N && streak < 5 && !isnan(h) && !isinf(h)  #magic number 5
       #was q3 = (-(k+1)*(k+2)*q0*x^3+(k+2)^2*q1*(x-2)*x^2+(k+3)*(k+4)*q2*(x-2)^2*x)/((k+4)^2*(x-2)^3)
 	  
 	  # We need to be careful with contagion. Replacing ((k+3)*s0)/(k+4)
