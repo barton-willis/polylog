@@ -9,15 +9,6 @@
 
 # Extend eps.
 import Base.eps
-eps(x::Type{Int}) = zero(x)
-eps(x::Type{Rational}) = zero(x)
-eps(x::Type{Rational{Int64}}) = zero(x)
-eps(x::Type{Rational{Int64}}) = zero(x)
-eps(x::Type{BigInt}) = zero(x)
-eps(x::Type{Complex{Int64}}) = zero(Int64)
-eps(x::Type{Complex{Rational{Int64}}}) = zero(Int64)
-eps(::Type{Complex{Rational{BigInt}}}) = zero(Rational{BigInt})
-eps(x::Type{Complex{Float16}}) = eps(Float16)
 eps(x::Type{Complex{Float32}}) = eps(Float32)
 eps(x::Type{Complex{Float64}}) = eps(Float64)
 eps(x::Type{Complex{BigFloat}}) = eps(BigFloat)
@@ -93,7 +84,7 @@ function polylog2_transform(x::Number)
 		q0 = x/(1-x/2)
 		polylog2_helper(q0,x)
 	elseif cmin == c1 #do x -> 1/x transformation
-		q0 = 1/(x-1/2)
+		q0 = 1/(x-1//2)
 		f = polylog2_helper(q0,1/x)
 		-f[1] - convert(T, pi^2/6) - mylog(-x)^2/2,f[2], f[3], f[4]
 	else #do x -> 1-x transformation
