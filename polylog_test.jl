@@ -30,10 +30,10 @@ function dlmf_25_12_3_E3(x)
 end
 
 # Test dlmf_25_12_3_E3 inside the unit cirle.
-function polylog2_test1(n)
+function polylog2_test1(T::DataType,n::Int64)
    results = Dict()
    while n > 0
-       x = rand() * cis(2*pi*rand())
+       x = convert(T,rand() * cis(2*pi*rand()))
        q = dlmf_25_12_3_E3(x)
        results[q] = if haskey(results,q) results[q]+1 else 1 end
        n -= 1
@@ -42,10 +42,10 @@ function polylog2_test1(n)
 end
 
 # Test dlmf_25_12_3_E3 on the unit circle
-function polylog2_test2(n)
+function polylog2_test2(T::DataType,n::Int64)
    results = Dict()
    while n > 0
-       x = cis(2*pi*rand())
+       x = convert(T, cis(2*pi*rand()))
        q = dlmf_25_12_3_E3(x)
        results[q] = if haskey(results,q) results[q]+1 else 1 end
        n -= 1
@@ -68,10 +68,10 @@ function dlmf_25_12_E5(z,m::Int64)
    end
 end
 
-function polylog2_test3(n)
+function polylog2_test3(T::DataType,n::Int64)
    results = Dict()
    while n > 0
-       x = rand()*cis(2*pi*rand())
+       x = convert(T, rand()*cis(2*pi*rand()))
        k = rand
        q = dlmf_25_12_E5(x,rand(1:4))
        results[q] = if haskey(results,q) results[q]+1 else 1 end
@@ -89,10 +89,10 @@ function dlmf_25_12_E7(x)
    end
 end
 
-function polylog2_test4(n)
+function polylog2_test4(T::DataType, n::Int64)
    results = Dict()
    while n > 0
-       x = 2*pi*rand()
+       x = convert(T,2*pi*rand())
        q =  dlmf_25_12_E7(x)
        if q > 200
          @show(x, polylog2(cis(x)))
@@ -108,10 +108,10 @@ function polylog2_id_1(x)
    rd(polylog2(x)+polylog2(-x),polylog2(x^2)/2)
 end
 
-function polylog2_test5(n)
+function polylog2_test5(T::DataType,n::Int64)
    results = Dict()
    while n > 0
-       x = 2.0 * rand() * cis(2*pi*rand())
+       x = convert(T, 2.0 * rand() * cis(2*pi*rand()))
        q =  polylog2_id_1(x)
        results[q] = if haskey(results,q) results[q]+1 else 1 end
        n -= 1
