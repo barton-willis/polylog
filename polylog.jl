@@ -9,6 +9,7 @@
 
 # Extend eps.
 import Base.eps
+eps(x::Type{Complex{Float16}}) = eps(Float16)
 eps(x::Type{Complex{Float32}}) = eps(Float32)
 eps(x::Type{Complex{Float64}}) = eps(Float64)
 eps(x::Type{Complex{BigFloat}}) = eps(BigFloat)
@@ -116,9 +117,9 @@ function polylog2_helper(q0::Number, x::Number)
     while k < N && streak < 5 #magic number 5
       #was q3 = (-(k+1)*(k+2)*q0*x^3+(k+2)^2*q1*(x-2)*x^2+(k+3)*(k+4)*q2*(x-2)^2*x)/((k+4)^2*(x-2)^3)
 	  
-	  # We need to be careful with proper contagion. Replacing ((k+3)*s0)/(k+4)
+	  # We need to be careful with contagion. Replacing ((k+3)*s0)/(k+4)
 	  # by ((k+3)/(k+4))*s0 is OK when s0 is a binary64, but not OK when s0 is
-	  # a BigFloat. So we  do (integer x Float)/integer, and I think this is OK.
+	  # a BigFloat. So we do (integer x Float)/integer, and I think this is OK.
 	  p0 = -((k+1)*(k+2)*s2)/((k+4)^2)
 	  p1 = ((k+2)^2*s1)/((k+4)^2)
 	  p2 = ((k+3)*s0)/(k+4)
@@ -137,5 +138,3 @@ function polylog2_helper(q0::Number, x::Number)
 	end
 	h, ep*(if cndI == 0 cndR else cndR + cndI*im end), k, k < N && !isnan(h) && !isinf(h)
 end
-	
-
