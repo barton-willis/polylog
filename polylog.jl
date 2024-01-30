@@ -120,11 +120,16 @@ function polylog2_helper(q0::Number, x::Number)
 	cndI = abs(imag(q0))+abs(imag(q1))+abs(imag(q2)) #imaginary part of sum condition number.
 	ep = eps(T)
 	ks = zero(T) #Kahan summation corrector
-    w0 = x/(x-2)^3 #hoist two constants by hand
-	w1 = (x-2)^2
+	s0 = x/(x-2)
+	s1 = s0^2
+	s2 = s0^3
+
     while k < N && streak < 5 #magic number 5
       #was q3 = (-(k+1)*(k+2)*q0*x^3+(k+2)^2*q1*(x-2)*x^2+(k+3)*(k+4)*q2*(x-2)^2*x)/((k+4)^2*(x-2)^3)
-	  q3 = w0*((x*(k+2)* ((k+2)*q1*(x-2)-(k+1)*q0*x)) +w1*(k+3)*(k+4)*q2)/((k+4)^2)
+	  p0 = -((k+1)*(k+2)/(k+4)^2)*s2
+	  p1 = ((k+2)/(k+4))^2*s1
+	  p2 = ((k+3)/(k+4))*s0
+	  q3 = (p0*q0 + p1*q1) + p2*q2
 	  qq3 = q3-ks #start Kahan summation
 	  t = h+qq3 
 	  ks = (t - h) - qq3
