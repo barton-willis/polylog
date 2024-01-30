@@ -79,18 +79,18 @@ function polylog2_transform(x::Number)
 	if x == 0
 		convert(T,0), convert(T,0), 0, true
 	elseif x == 1
-		convert(T, pi^2/6), convert(T,0), 0, true
+		convert(T, pi)^2/ 6, convert(T,0), 0, true
 	elseif cmin == c0 #no transformation
 		q0 = x/(1-x/2)
 		polylog2_helper(q0,x)
 	elseif cmin == c1 #do x -> 1/x transformation
 		q0 = 1/(x-1//2)
 		f = polylog2_helper(q0,1/x)
-		-f[1] - convert(T, pi^2/6) - mylog(-x)^2/2,f[2], f[3], f[4]
+		-f[1] - convert(T, pi)^2 / 6 - mylog(-x)^2/2,f[2], f[3], f[4]
 	else #do x -> 1-x transformation
 		q0 = 2*((1-x)/(1+x))
 		f = polylog2_helper(q0,1-x)
-		-f[1] + convert(T, pi^2/6) - mylog(x)*mylog(1-x),f[2], f[3], f[4]
+		-f[1] + convert(T, pi)^2 /6 - mylog(x)*mylog(1-x),f[2], f[3], f[4]
 	end
 end
 
