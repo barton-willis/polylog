@@ -72,9 +72,9 @@ end
 # betwen using x --> x, x --> 1/x, and x --> 1-x.
 function polylog2_transform(x::Number)
 	T = typeof(x)
-	cnd = x -> if x == 2 Inf else abs2(x/(2-x)) end
+	cnd = x -> if isapprox(2,x,atol=eps(T)) Inf else abs2(x/(2-x)) end
 	c0 = cnd(x)
-	c1 = if x == 0 Inf else cnd(1/x) end 
+	c1 = if isapprox(0,x,atol=eps(T)) Inf else cnd(1/x) end 
 	c2 = cnd(1-x)
 	cmin = min(c0,c1,c2)
 	if x == 0
