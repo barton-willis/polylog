@@ -42,7 +42,7 @@ julia> 0.1291398601099534056689353043446094486239
 function polylog2(x::Number)
 	# call polylog2_transform & check for success
 	f = polylog2_transform(x::Number)
-	if f[4]
+	if f[2]
 		f[1]
 	else
 		error("Unable to evaluate(polylog2(", x, ")")
@@ -82,20 +82,20 @@ function polylog2_transform(x::Number)
 	c2 = cnd(1-x)
 	cmin = min(c0,c1,c2)
 	if x == 0
-		convert(T,0), convert(T,0), 0, true
+		convert(T,0), true
 	elseif x == 1
-		convert(T, pi)^2/6, convert(T,0), 0, true
+		convert(T, pi)^2/6, true
 	elseif cmin == c0 #no transformation
 		q0 = x/(1-x/2)
 		polylog2_helper(q0,x)
 	elseif cmin == c1 #do x -> 1/x transformation
 		q0 = 1/(x-1//2)
 		f = polylog2_helper(q0,1/x)
-		-f[1] - convert(T, pi)^2/6 - mylog(-x)^2/2,f[2], f[3], f[4]
+		-f[1] - convert(T, pi)^2/6 - mylog(-x)^2/2,f[2]
 	else #do x -> 1-x transformation
 		q0 = 2*((1-x)/(1+x))
 		f = polylog2_helper(q0,1-x)
-		-f[1] + convert(T, pi)^2/6 - mylog(x)*mylog(1-x),f[2], f[3], f[4]
+		-f[1] + convert(T, pi)^2/6 - mylog(x)*mylog(1-x),f[2]
 	end
 end
 
@@ -140,5 +140,6 @@ function polylog2_helper(q0::Number, x::Number)
 	  q2 = q3	
       k += 1
 	end
-	h, ep*(if cndI == 0 cndR else cndR + cndI*im end), k, k < N && !isnan(h) && !isinf(h)
+	OK = k < N && !isnan(h) && !isinf(h) && cndR < 16 && cndI < 16
+	h, OK
 end
