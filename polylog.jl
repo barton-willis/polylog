@@ -18,6 +18,28 @@ eps(x::Type{Complex{BigFloat}}) = eps(BigFloat)
 BigFloat(x::Complex) = BigFloat(real(x)) + BigFloat(imag(x))im
 
 """
+  mylog(x::Number)
+
+When x in (0,infinity) return log(x); otherwise, convert x to 
+a complex and then dispatch log on x. This function is _not_
+intended to be a user-level function.
+"""
+function mylog(x::Number)
+	if isreal(x) && x > 0
+		log(x)
+	else 
+		log(Complex(x))	
+	end
+end
+
+# This function optionally uses a polylog2 function identity before
+# it calls polylog2_helper. The polylog2 function has functional 
+# relations for x --> 1/x,  x --> 1/(1-x), x --> (x-1)/x, and x --> 1-x. 
+# But the convergence rate, given by cnd,  is the same for x --> 1/x & 
+# x --> 1/(1-x) and the same for x --> (x-1)/x & x --> 1-x. So we only choose
+# betwen using x --> x, x --> 1/x, and x --> 1-x.
+
+"""
     polylog2(x::Number)
 
 Compute the numeric value of the dilogarithm. For a definition of this function,
@@ -40,62 +62,32 @@ julia> 0.1291398601099534056689353043446094486239
 ```
 """
 function polylog2(x::Number)
-	# call polylog2_transform & check for success
-	f = polylog2_transform(x::Number)
-	if f[2]
-		f[1]
-	else
-		error("Unable to evaluate(polylog2(", x, ")")
-	end 
-end
-
-"""
-  mylog(x::Number)
-
-When x in (0,infinity) return log(x); otherwise, convert x to 
-a complex and then dispatch log on x. This function is _not_
-intended to be a user-level function.
-"""
-function mylog(x::Number)
-	if isreal(x) && x > 0
-		log(x)
-	else 
-		log(Complex(x))	
-	end
-end
-
-# This function optionally uses a polylog2 function identity before
-# it calls polylog2_helper. This is not intended to be a user level 
-# function. Presumably, it chooses the identity to gain speed and
-# accuracy.
-
-# The polylog2 function has functional relations for x --> 1/x, 
-# x --> 1/(1-x), x --> (x-1)/x, and x --> 1-x. But the convergence
-# rate, given by cnd,  is the same for x --> 1/x & x --> 1/(1-x)
-# and the same for x --> (x-1)/x & x --> 1-x. So we only choose
-# betwen using x --> x, x --> 1/x, and x --> 1-x.
-function polylog2_transform(x::Number)
 	T = typeof(x)
 	cnd = x -> if isapprox(2,x,atol=eps(T)) Inf else abs2(x/(2-x)) end
 	c0 = cnd(x)
 	c1 = if isapprox(0,x,atol=eps(T)) Inf else cnd(1/x) end 
 	c2 = cnd(1-x)
 	cmin = min(c0,c1,c2)
-	if x == 0
-		convert(T,0), true
-	elseif x == 1
-		convert(T, pi)^2/6, true
-	elseif cmin == c0 #no transformation
-		q0 = x/(1-x/2)
-		polylog2_helper(q0,x)
-	elseif cmin == c1 #do x -> 1/x transformation
-		q0 = 1/(x-1//2)
-		f = polylog2_helper(q0,1/x)
-		-f[1] - convert(T, pi)^2/6 - mylog(-x)^2/2,f[2]
-	else #do x -> 1-x transformation
-		q0 = 2*((1-x)/(1+x))
-		f = polylog2_helper(q0,1-x)
-		-f[1] + convert(T, pi)^2/6 - mylog(x)*mylog(1-x),f[2]
+	R = if x == 0
+		   convert(T,0), true
+	    elseif x == 1
+		   convert(T, pi)^2/6, true
+	    elseif cmin == c0 #no transformation
+		   q0 = x/(1-x/2)
+		   polylog2_helper(q0,x)
+	    elseif cmin == c1 #do x -> 1/x transformation
+		   q0 = 1/(x-1//2)
+		   f = polylog2_helper(q0,1/x)
+		  -f[1] - convert(T, pi)^2/6 - mylog(-x)^2/2,f[2]
+	    else #do x -> 1-x transformation
+		   q0 = 2*((1-x)/(1+x))
+		   f = polylog2_helper(q0,1-x)
+		  -f[1] + convert(T, pi)^2/6 - mylog(x)*mylog(1-x),f[2]
+	    end
+	if R[2]
+		R[1]
+	else 
+		error("Unable to evaluate(polylog2(", x, ")")
 	end
 end
 

@@ -22,7 +22,7 @@ end
 # This identity is valid off [1,infty). For a input in [1,infy),
 # return true.
 function dlmf_25_12_3_E3(x)
-   if imag(x)==0 && x >= 1
+   if imag(x)==0 && real(x) >= 1
       true
    else
      rd(polylog2(x) + polylog2(x/(x-1)), -log(1-x)^2 / 2)
