@@ -40,7 +40,7 @@ end
 # betwen using x --> x, x --> 1/x, and x --> 1-x.
 
 # The linear convergence rate is bounded above by 1/sqrt(3). The
-# linear convergence rate for cis(pi/3) = 1/sqrt(3).
+# linear convergence rate for cis(pi/3) is 1/sqrt(3).
 
 """
     polylog2(x::Number)
