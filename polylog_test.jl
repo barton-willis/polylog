@@ -82,7 +82,7 @@ end
 
 #http://dlmf.nist.gov/25.12.E7
 function dlmf_25_12_E7(x)
-   if 0 <= x && x <= 2*pi
+   if zero(typeof(x)) <= x && x <= convert(typeof(x), 2*pi)
      rd(real(polylog2(cis(x))), pi*(pi/6 - x/2) + x^2/4)
    else 
       true
@@ -94,9 +94,6 @@ function polylog2_test4(T::DataType, n::Int64)
    while n > 0
        x = convert(T,2*pi*rand())
        q =  dlmf_25_12_E7(x)
-       if q > 200
-         @show(x, polylog2(cis(x)))
-       end
        results[q] = if haskey(results,q) results[q]+1 else 1 end
        n -= 1
    end
