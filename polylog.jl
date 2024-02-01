@@ -131,7 +131,7 @@ function polylog2_helper(q0::Number, x::Number)
         h = t #end Kahan summation	
         cndR += abs(real(q3))
         cndI += abs(imag(q3))
-		(q0,q1,q2) = (q1,q2,q3)
+        (q0,q1,q2) = (q1,q2,q3)
         k += 1
     end
     OK = k < N && !isnan(h) && !isinf(h) && cndR < 16 && cndI < 16
