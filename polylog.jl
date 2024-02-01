@@ -35,9 +35,12 @@ end
 # This function optionally uses a polylog2 function identity before
 # it calls polylog2_helper. The polylog2 function has functional 
 # relations for x --> 1/x,  x --> 1/(1-x), x --> (x-1)/x, and x --> 1-x. 
-# But the convergence rate, given by cnd,  is the same for x --> 1/x & 
+# But the linear convergence rate, given by cnd, is the same for x --> 1/x & 
 # x --> 1/(1-x) and the same for x --> (x-1)/x & x --> 1-x. So we only choose
 # betwen using x --> x, x --> 1/x, and x --> 1-x.
+
+# The linear convergence rate is bounded above by 1/sqrt(3). The
+# linear convergence rate for cis(pi/3) = 1/sqrt(3).
 
 """
     polylog2(x::Number)
@@ -63,19 +66,12 @@ julia> 0.1291398601099534056689353043446094486239
 """
 function polylog2(x::Number)
     T = typeof(x)
-    cnd = x -> if isapprox(2, x, atol=eps(T))
-        Inf
-    else
-        abs2(x / (2 - x))
-    end
+    cnd = x -> if isapprox(2, x, atol=eps(T)) Inf else abs2(x / (2 - x)) end
     c0 = cnd(x)
-    c1 = if isapprox(0, x, atol=eps(T))
-        Inf
-    else
-        cnd(1 / x)
-    end
+    c1 = if isapprox(0, x, atol=eps(T)) Inf else cnd(1 / x) end
     c2 = cnd(1 - x)
     cmin = min(c0, c1, c2)
+	@assert 3*cmin <= 1
     R = if x == 0
         convert(T, 0), true
     elseif x == 1
