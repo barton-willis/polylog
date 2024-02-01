@@ -127,17 +127,11 @@ function polylog2_helper(q0::Number, x::Number)
         qq3 = q3 - ks #start Kahan summation
         t = h + qq3
         ks = (t - h) - qq3
-        streak = if (h == t)
-            streak + 1
-        else
-            0
-        end
+        streak = if (h == t) streak + 1 else 0 end
         h = t #end Kahan summation	
         cndR += abs(real(q3))
         cndI += abs(imag(q3))
-        q0 = q1
-        q1 = q2
-        q2 = q3
+		(q0,q1,q2) = (q1,q2,q3)
         k += 1
     end
     OK = k < N && !isnan(h) && !isinf(h) && cndR < 16 && cndI < 16
