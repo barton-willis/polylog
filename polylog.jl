@@ -102,8 +102,8 @@ function polylog2_helper(q0::Number, x::Number)
     #was q0 = x/(1-x/2)
     q1 = -q0^2 / 4 # was -x^2/(4*(1-x/2)^2)
     q2 = q0^3 / 9  # was x^3/(9*(1-x/2)^3)
-    h = q0 + (q1 + q2)
-    N = 2^24 #magic number--it is a power of two for no particular reason
+    h = q0 + (q1 + q2) # not sure of best order to sum.
+    N = 2^24 # magic number--it is a power of two for no particular reason
     k = zero(N)
     streak = zero(N)
     cndR = abs(real(q0)) + abs(real(q1)) + abs(real(q2)) #real part of sum condition number.
@@ -133,5 +133,6 @@ function polylog2_helper(q0::Number, x::Number)
         (q0,q1,q2) = (q1,q2,q3)
         k += 1
     end
+    @show(k,cndR, cndI)
     h, k < N && !isnan(h) && !isinf(h) && cndR < 16 && cndI < 16
 end
