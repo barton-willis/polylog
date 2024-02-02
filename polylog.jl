@@ -108,7 +108,6 @@ function polylog2_helper(q0::Number, x::Number)
     streak = zero(N)
     cndR = abs(real(q0)) + abs(real(q1)) + abs(real(q2)) #real part of sum condition number.
     cndI = abs(imag(q0)) + abs(imag(q1)) + abs(imag(q2)) #imaginary part of sum condition number.
-    ep = eps(T)
     ks = zero(T) #Kahan summation corrector
     s0 = x / (x - 2)
     s1 = s0^2
@@ -134,6 +133,5 @@ function polylog2_helper(q0::Number, x::Number)
         (q0,q1,q2) = (q1,q2,q3)
         k += 1
     end
-    OK = k < N && !isnan(h) && !isinf(h) && cndR < 16 && cndI < 16
-    h, OK
+    h, k < N && !isnan(h) && !isinf(h) && cndR < 16 && cndI < 16
 end
