@@ -133,6 +133,5 @@ function polylog2_helper(q0::Number, x::Number)
         (q0,q1,q2) = (q1,q2,q3)
         k += 1
     end
-    @show(k,cndR, cndI)
     h, k < N && !isnan(h) && !isinf(h) && cndR < 16 && cndI < 16
 end
