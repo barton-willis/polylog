@@ -37,7 +37,7 @@ end
 # relations for x --> 1/x,  x --> 1/(1-x), x --> (x-1)/x, and x --> 1-x. 
 # But the linear convergence rate, given by cnd, is the same for x --> 1/x & 
 # x --> 1/(1-x) and the same for x --> (x-1)/x & x --> 1-x. So we only choose
-# betwen using x --> x, x --> 1/x, and x --> 1-x.
+# between using x --> x, x --> 1/x, and x --> 1-x.
 
 # The linear convergence rate is bounded above by 1/sqrt(3). The
 # linear convergence rate for cis(pi/3) is 1/sqrt(3).
@@ -96,7 +96,7 @@ function polylog2(x::Number)
 end
 
 # return value of polylog(2,x), the condition number of the sum, the 
-# number of terms summed, and a boolean that indicates sucess or failure.
+# number of terms summed, and a boolean that indicates success or failure.
 function polylog2_helper(q0::Number, x::Number)
     T = typeof(x)
     #was q0 = x/(1-x/2)

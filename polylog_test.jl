@@ -29,7 +29,7 @@ function dlmf_25_12_3_E3(x)
    end
 end
 
-# Test dlmf_25_12_3_E3 inside the unit cirle.
+# Test dlmf_25_12_3_E3 inside the unit circle.
 function polylog2_test1(T::DataType,n::Int64)
    results = Dict()
    while n > 0
