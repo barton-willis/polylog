@@ -103,7 +103,7 @@ function polylog2_helper(q0::Number, x::Number)
     q1 = -q0^2 / 4 # was -x^2/(4*(1-x/2)^2)
     q2 = q0^3 / 9  # was x^3/(9*(1-x/2)^3)
     h = q0 + (q1 + q2)
-    N = convert(Int64, 2^24) #magic number--it is a power of two for no particular reason
+    N = 2^24 #magic number--it is a power of two for no particular reason
     k = zero(N)
     streak = zero(N)
     cndR = abs(real(q0)) + abs(real(q1)) + abs(real(q2)) #real part of sum condition number.
