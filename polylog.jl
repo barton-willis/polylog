@@ -134,3 +134,7 @@ function polylog2_helper(q0::Number, x::Number)
     end
     h, k < N && !isnan(h) && !isinf(h) && cndR < 16 && cndI < 16
 end
+
+function polylog2(x::Int64)
+    polylog2(convert(Float64,x)) 
+end
