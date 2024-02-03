@@ -23,4 +23,5 @@ end
     @test polylog2(-(1+sqrt(5))/2) ≈ -pi^2/10 - log((1+sqrt(5))/2)^2
     @test polylog2((3-sqrt(5))/2) ≈ pi^2/15 - log((1+sqrt(5))/2)^2
     @test polylog2((sqrt(5)-1)/2) ≈ pi^2/10 - log((1+sqrt(5))/2)^2
+    @test polylog2(sqrt(2)-1)-polylog2(1-sqrt(2)) ≈ pi^2/8 - log(1+sqrt(2))^2/2 
 end
