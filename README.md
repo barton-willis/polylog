@@ -12,7 +12,7 @@
 
 - The method uses a series that converges linearly on the entire complex plane (except at one). The largest convergence rate is $1/\sqrt{3}$.
 
-- To boost accuracy, the method uses Kahan summation. Also, it monitors the accuracy of the summation using a running error bound.
+- The focus of this code is accuracy over speed. To boost accuracy, the method uses Kahan summation. Also, it monitors the accuracy of the summation using a running error bound.
 
 ## Other
 
