@@ -9,10 +9,8 @@
 
 # Extend eps.
 import Base.eps
-eps(x::Type{Complex{Float16}}) = eps(Float16)
-eps(x::Type{Complex{Float32}}) = eps(Float32)
-eps(x::Type{Complex{Float64}}) = eps(Float64)
-eps(x::Type{Complex{BigFloat}}) = eps(BigFloat)
+import Base.BigFloat
+eps(::Type{Complex{T}}) where T <: AbstractFloat = eps(T)
 
 # convert a complex to a bigfloat
 BigFloat(x::Complex) = BigFloat(real(x)) + BigFloat(imag(x))im

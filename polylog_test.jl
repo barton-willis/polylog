@@ -19,7 +19,7 @@ function test_report(results)
 end
 
 # Test the identity http://dlmf.nist.gov/25.12.E3 .
-# This identity is valid off [1,infty). For a input in [1,infy),
+# This identity is valid off [1,infinity). For a input in [1,infinity),
 # return true.
 function dlmf_25_12_3_E3(x)
    if imag(x)==0 && real(x) >= 1
