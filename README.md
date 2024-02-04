@@ -17,7 +17,19 @@ for $k \to \infty$, where the magnitude of $\mu$ is bounded by $1/\sqrt{3} \appr
 
 ## Other
 
-- There is a standard Julia package [PolyLog.jl](https://juliapackages.com/p/polylog) for the numerical evaluation of polylogarithms, but I have not compared the methods.
+- There is a standard Julia package [PolyLog.jl](https://juliapackages.com/p/polylog) for the numerical evaluation of polylogarithms. For BigFloat numbers, the method in `polylog.jl` _is sometimes_ more efficient than `PolyLog.jl`. Here is one example
+
+~~~
+setprecision(BigFloat,128);
+
+@btime li2(convert(Complex{BigFloat},cis(pi/3)))
+2.079 ms (4912 allocations: 156.58 KiB)
+0.2741556778080378663699490634254841514023 + 1.14941606409653637648270733876243611287im
+
+@btime polylog2(convert(Complex{BigFloat},cis(pi/3s)))
+857.000 μs (22015 allocations: 871.88 KiB)
+0.2741556778080378663699490634254841514082 + 1.14941606409653637648270733876243611281im
+~~~
 
 - The file `tests.jl` has some tests of special values. These tests make use of the standard Julia unit testing
 format. The file `polylog.jl` has some identity-based tests, but these tests are not (yet) in the form of Julia unit testing.
