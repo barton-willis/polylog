@@ -1,3 +1,9 @@
+# Many of these tests use function identities that the code uses to 
+# transform the input to gain better convergence. Such tests are not particularly
+# good.
+
+# A modified relative difference function. Maybe this needs to be modified
+# for denormal numbers?
 function rd(a,b)
     floor(Int64, abs(a-b)/(eps(typeof(a)) * max(1, min(abs(a),abs(b)))))
 end
