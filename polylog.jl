@@ -116,18 +116,13 @@ function polylog2_helper(q0::Number, x::Number)
     while k < N && streak < 5 && !isnan(h) && !isinf(h)  #magic number 5
         #was q3 = (-(k+1)*(k+2)*q0*x^3+(k+2)^2*q1*(x-2)*x^2+(k+3)*(k+4)*q2*(x-2)^2*x)/((k+4)^2*(x-2)^3)
 
-        # We need to be careful with contagion. For example, replacing ((k+3)*s0)/(k+4)
-        # by ((k+3)/(k+4))*s0 is OK when s0 is a binary64, but not OK when s0 is
-        # a BigFloat. So for proper contagion, we do (integer x Float)/integer, and 
-        # I think this is OK.
+        # We need to be careful with contagion. But these do Int64*float, and I think
+        # these do the proper contagion.
+        p0 = -(k+1)*(k+2)*s2
+        p1 = (k+2)^2*s1
+        p2 = (k+3)*(k+4)*s0
+        q3 = (p0 * q0 + (p1 * q1 + p2 * q2))/(k+4)^2 # not sure of best order to sum.
 
-        # I could factor out the division by (k+4)^2 and put it in the 
-        # calculation of q3. But I have no evidence that this increases 
-        # accuracy or efficiency.
-        p0 = -((k + 1) * (k + 2) * s2) / ((k + 4)^2)
-        p1 = ((k + 2)^2 * s1) / ((k + 4)^2)
-        p2 = ((k + 3) * s0) / (k + 4)
-        q3 = p0 * q0 + (p1 * q1 + p2 * q2) # not sure of best order to sum.
         qq3 = q3 - ks #start Kahan summation
         t = h + qq3
         ks = (t - h) - qq3
