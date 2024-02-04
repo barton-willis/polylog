@@ -120,6 +120,10 @@ function polylog2_helper(q0::Number, x::Number)
         # by ((k+3)/(k+4))*s0 is OK when s0 is a binary64, but not OK when s0 is
         # a BigFloat. So for proper contagion, we do (integer x Float)/integer, and 
         # I think this is OK.
+
+        # I could factor out the division by (k+4)^2 and put it in the 
+        # calculation of q3. But I have no evidence that this increases 
+        # accuracy or efficiency.
         p0 = -((k + 1) * (k + 2) * s2) / ((k + 4)^2)
         p1 = ((k + 2)^2 * s1) / ((k + 4)^2)
         p2 = ((k + 3) * s0) / (k + 4)
