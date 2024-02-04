@@ -16,13 +16,13 @@ eps(::Type{Complex{T}}) where T <: AbstractFloat = eps(T)
 BigFloat(x::Complex) = BigFloat(real(x)) + BigFloat(imag(x))im
 
 """
-  mylog(x::Number)
+  clog(x::Number)
 
 When x in (0,infinity) return log(x); otherwise, convert x to 
 a complex and then dispatch log on x. This function is _not_
 intended to be a user-level function.
 """
-function mylog(x::Number) # better name is clog?
+function clog(x::Number)
     if isreal(x) && x > 0
         log(x)
     else
@@ -80,12 +80,12 @@ function polylog2(x::Number)
     elseif cmin == c1 #do x -> 1/x transformation
         q0 = inv(x - 1 // 2)
         f = polylog2_helper(q0, inv(x))
-        -f[1] - convert(T, pi)^2 / 6 - mylog(-x)^2 / 2, f[2]
+        -f[1] - convert(T, pi)^2 / 6 - clog(-x)^2 / 2, f[2]
     else #do x -> 1-x transformation
         q0 = 2 * ((1 - x) / (1 + x))
         f = polylog2_helper(q0, 1 - x)
-        # I don't think mylog(1-x)-->log1p(-x) is a win?
-        -f[1] + convert(T, pi)^2 / 6 - mylog(x) * mylog(1 - x), f[2]
+        # I don't think clog(1-x)-->log1p(-x) is a win?
+        -f[1] + convert(T, pi)^2 / 6 - clog(x) * clog(1 - x), f[2]
     end
     if R[2]
         R[1]
