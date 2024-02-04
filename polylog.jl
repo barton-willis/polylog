@@ -66,7 +66,7 @@ function polylog2(x::Number)
     T = typeof(x)
     cnd = x -> if isapprox(2, x, atol=eps(T)) Inf else abs2(x / (2 - x)) end
     c0 = cnd(x)
-    c1 = if isapprox(0, x, atol=eps(T)) Inf else cnd(1 / x) end
+    c1 = if isapprox(0, x, atol=eps(T)) Inf else cnd(inv(x)) end
     c2 = cnd(1 - x)
     cmin = min(c0, c1, c2)
 	@assert 3*cmin <= 1
@@ -78,8 +78,8 @@ function polylog2(x::Number)
         q0 = x / (1 - x / 2)
         polylog2_helper(q0, x)
     elseif cmin == c1 #do x -> 1/x transformation
-        q0 = 1 / (x - 1 // 2)
-        f = polylog2_helper(q0, 1 / x)
+        q0 = inv(x - 1 // 2)
+        f = polylog2_helper(q0, inv(x))
         -f[1] - convert(T, pi)^2 / 6 - mylog(-x)^2 / 2, f[2]
     else #do x -> 1-x transformation
         q0 = 2 * ((1 - x) / (1 + x))
@@ -94,8 +94,10 @@ function polylog2(x::Number)
     end
 end
 
-# return value of polylog(2,x), the condition number of the sum, the 
-# number of terms summed, and a boolean that indicates success or failure.
+# return value of polylog(2,x) and a boolean that indicates success or failure.
+
+# We have h = L + c (-x/2)^k. We could exploit this fact to extrapolate the limit
+# and return early.
 function polylog2_helper(q0::Number, x::Number)
     T = typeof(x)
     #was q0 = x/(1-x/2)
@@ -111,7 +113,6 @@ function polylog2_helper(q0::Number, x::Number)
     s0 = x / (x - 2)
     s1 = s0^2
     s2 = s0^3
-
     while k < N && streak < 5 && !isnan(h) && !isinf(h)  #magic number 5
         #was q3 = (-(k+1)*(k+2)*q0*x^3+(k+2)^2*q1*(x-2)*x^2+(k+3)*(k+4)*q2*(x-2)^2*x)/((k+4)^2*(x-2)^3)
 
