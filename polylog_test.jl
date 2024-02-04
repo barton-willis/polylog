@@ -1,5 +1,5 @@
 function rd(a,b)
-    floor(Int64, abs(a-b)/(eps(typeof(a)) * max(1,abs(a),abs(b))))
+    floor(Int64, abs(a-b)/(eps(typeof(a)) * max(1, min(abs(a),abs(b)))))
 end
 
 function test_report(results)

@@ -22,7 +22,7 @@ When x in (0,infinity) return log(x); otherwise, convert x to
 a complex and then dispatch log on x. This function is _not_
 intended to be a user-level function.
 """
-function mylog(x::Number)
+function mylog(x::Number) # better name is clog?
     if isreal(x) && x > 0
         log(x)
     else
@@ -84,6 +84,7 @@ function polylog2(x::Number)
     else #do x -> 1-x transformation
         q0 = 2 * ((1 - x) / (1 + x))
         f = polylog2_helper(q0, 1 - x)
+        # I don't think mylog(1-x)-->log1p(-x) is a win?
         -f[1] + convert(T, pi)^2 / 6 - mylog(x) * mylog(1 - x), f[2]
     end
     if R[2]

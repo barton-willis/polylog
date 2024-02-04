@@ -14,5 +14,6 @@
         "mac": {
             "parser": "code"
         }
-    }
+    },
+    "julia.environmentPath": "C:\\Users\\Barton\\.julia\\environments\\v1.1"
 }
