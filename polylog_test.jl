@@ -60,12 +60,13 @@ function polylog2_test2(T::DataType,n::Int64)
 end
 
 # http://dlmf.nist.gov/25.12.E5
-function dlmf_25_12_E5(z,m::Int64)
+function dlmf_25_12_E5(T,z,m::Int64)
    if abs(z) < 1 && m > 0 
-      s = 0
+      s = zero(T)
       k = 0
       while k < m
-         s += polylog2(z*cis(2*pi*k/m))
+         θ = (2*k*convert(T,pi))/m
+         s += polylog2(z*cis(θ))
          k += 1
       end
       rd(polylog2(z^m), m*s)
@@ -78,7 +79,7 @@ function polylog2_test3(T::DataType,n::Int64)
    results = Dict()
    while n > 0
        x = convert(T, rand()*cis(2*pi*rand()))
-       q = dlmf_25_12_E5(x,rand(1:4))
+       q = dlmf_25_12_E5(T,x,rand(1:4))
        results[q] = if haskey(results,q) results[q]+1 else 1 end
        n -= 1
    end

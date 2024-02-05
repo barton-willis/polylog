@@ -75,17 +75,17 @@ function polylog2(x::Number)
     elseif x == 1
         convert(T, pi)^2 / 6, true
     elseif cmin == c0 #no transformation
-        q0 = x / (1 - x / 2)
+        q0 = x / (one(T) - x / 2)
         polylog2_helper(q0, x)
     elseif cmin == c1 #do x -> 1/x transformation
-        q0 = inv(x - 1 // 2)
+        q0 = inv(x - one(T)/2)
         f = polylog2_helper(q0, inv(x))
         -f[1] - convert(T, pi)^2 / 6 - clog(-x)^2 / 2, f[2]
     else #do x -> 1-x transformation
-        q0 = 2 * ((1 - x) / (1 + x))
-        f = polylog2_helper(q0, 1 - x)
+        q0 = 2 * ((one(T) - x) / (one(T) + x))
+        f = polylog2_helper(q0, one(T) - x)
         # I don't think clog(1-x)-->log1p(-x) is a win?
-        -f[1] + convert(T, pi)^2 / 6 - clog(x) * clog(1 - x), f[2]
+        -f[1] + convert(T, pi)^2 / 6 - clog(x) * clog(one(T) - x), f[2]
     end
     if R[2]
         R[1]
@@ -101,8 +101,8 @@ end
 function polylog2_helper(q0::Number, x::Number)
     T = typeof(x)
     #was q0 = x/(1-x/2)
-    q1 = -q0^2 / 4 # was -x^2/(4*(1-x/2)^2)
-    q2 = q0^3 / 9  # was x^3/(9*(1-x/2)^3)
+    q1 = (-q0^2) / 4 # was -x^2/(4*(1-x/2)^2)
+    q2 = (q0^3) / 9  # was x^3/(9*(1-x/2)^3)
     h = q0 + (q1 + q2) # not sure of best order to sum.
     N = 2^24 # magic number--it is a power of two for no particular reason
     k = zero(N)
