@@ -17,7 +17,7 @@ for $k \to \infty$, where the magnitude of $\mu$ is bounded by $1/\sqrt{3} \appr
 
 ## Other
 
-- There is a standard Julia package [PolyLog.jl](https://juliapackages.com/p/polylog) for the numerical evaluation of polylogarithms. For binary64 numbers, the Julia package
+There is a standard Julia package [PolyLog.jl](https://juliapackages.com/p/polylog) for the numerical evaluation of polylogarithms. For binary64 numbers, the Julia package
 `PolyLog.jl` uses efficient rational function approximations, and its speed is far
 better than `polylog.jl`. For example
 
@@ -44,9 +44,8 @@ setprecision(BigFloat,128);
 0.2741556778080378663699490634254841514082 + 1.14941606409653637648270733876243611281im
 ~~~
 
-- The file `tests.jl` has some tests of special values. These tests make use of the standard Julia unit testing
+ The file `tests.jl` has some tests of special values. Thesevtests make use of the standard Julia unit testing
 format. The file `polylog.jl` has some identity-based tests, but these tests are not (yet) in the form of Julia unit testing.
-
-- So far, I have not attempted to build a Julia package.
+So far, I have not attempted to build a Julia package.
 
 [def]: https://arxiv.org/pdf/1910.06928.pdf
