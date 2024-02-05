@@ -17,7 +17,20 @@ for $k \to \infty$, where the magnitude of $\mu$ is bounded by $1/\sqrt{3} \appr
 
 ## Other
 
-- There is a standard Julia package [PolyLog.jl](https://juliapackages.com/p/polylog) for the numerical evaluation of polylogarithms. For BigFloat numbers, the method in `polylog.jl` _is sometimes_ more efficient than `PolyLog.jl`. Here is one example
+- There is a standard Julia package [PolyLog.jl](https://juliapackages.com/p/polylog) for the numerical evaluation of polylogarithms. For binary64 numbers, the Julia package
+`PolyLog.jl` uses efficient rational function approximations, and its speed is far
+better than `polylog.jl`. For example
+
+~~~
+x = cis(pi/3);
+@btime polylog2(x)
+  2.256 μs (21 allocations: 464 bytes)
+  0.27415567780803785 + 1.0149416064096535im
+@btime li2(x)
+  139.277 ns (1 allocation: 32 bytes)
+  0.27415567780803785 + 1.0149416064096537im
+~~~
+But for BigFloat numbers, the method in `polylog.jl` _is sometimes_ more efficient than `PolyLog.jl`. Here is one example
 
 ~~~
 setprecision(BigFloat,128);
