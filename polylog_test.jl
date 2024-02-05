@@ -78,7 +78,6 @@ function polylog2_test3(T::DataType,n::Int64)
    results = Dict()
    while n > 0
        x = convert(T, rand()*cis(2*pi*rand()))
-       k = rand
        q = dlmf_25_12_E5(x,rand(1:4))
        results[q] = if haskey(results,q) results[q]+1 else 1 end
        n -= 1
