@@ -4,7 +4,7 @@
 
  The file `polylog.jl` has code for the numerical evaluation of the dilogarithm function on the entire complex plane. For a definition of this function, see the [Digital Library of Mathematical Functions](https://dlmf.nist.gov/25.12#E1)
 
- The method is based on a series representation from the article "The binomial transform of p-recursive sequences and the dilogarithm function," [(arxiv)][def] by Stephanie Harshbarger and Barton Willis. This article was published by _Applications and Applied Mathematics_, in **vol.** 15, **Issue** 2 (December 2020), pp. 1025–1031.
+ The method is based on a series representation from the article "The binomial transform of p-recursive sequences and the dilogarithm function," [(arXiv)][def] by Stephanie Harshbarger and Barton Willis. This article was published by _Applications and Applied Mathematics_, in **vol.** 15, **Issue** 2 (December 2020), pp. 1025–1031.
 
 ## Features
 
@@ -21,7 +21,7 @@ There is a standard Julia package [PolyLog.jl](https://juliapackages.com/p/polyl
 `PolyLog.jl` uses efficient rational function approximations, and its speed is far
 better than `polylog.jl`. For example
 
-~~~
+~~~Julia
 x = cis(pi/3);
 @btime polylog2(x)
   2.256 μs (21 allocations: 464 bytes)
@@ -30,9 +30,10 @@ x = cis(pi/3);
   139.277 ns (1 allocation: 32 bytes)
   0.27415567780803785 + 1.0149416064096537im
 ~~~
+
 But for BigFloat numbers, the method in `polylog.jl` _is sometimes_ more efficient than `PolyLog.jl`. Here is one example
 
-~~~
+~~~Julia
 setprecision(BigFloat,128);
 
 @btime li2(convert(Complex{BigFloat},cis(pi/3)))
@@ -44,7 +45,7 @@ setprecision(BigFloat,128);
 0.2741556778080378663699490634254841514082 + 1.14941606409653637648270733876243611281im
 ~~~
 
- The file `tests.jl` has some tests of special values. Thesevtests make use of the standard Julia unit testing
+ The file `tests.jl` has some tests of special values. These tests make use of the standard Julia unit testing
 format. The file `polylog.jl` has some identity-based tests, but these tests are not (yet) in the form of Julia unit testing.
 So far, I have not attempted to build a Julia package.
 
