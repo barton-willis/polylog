@@ -87,9 +87,10 @@ function polylog2_test3(T::DataType,n::Int64)
 end
 
 #http://dlmf.nist.gov/25.12.E7
-function dlmf_25_12_E7(x)
+function dlmf_25_12_E7(T,x)
    if zero(typeof(x)) <= x && x <= convert(typeof(x), 2*pi)
-     rd(real(polylog2(cis(x))), pi*(pi/6 - x/2) + x^2/4)
+     pie = convert(T,pi)
+     rd(real(polylog2(cis(x))),  pie*(pie/6 - x/2) + x^2/4)
    else 
       true
    end
@@ -99,7 +100,7 @@ function polylog2_test4(T::DataType, n::Int64)
    results = Dict()
    while n > 0
        x = convert(T,2*pi*rand())
-       q =  dlmf_25_12_E7(x)
+       q =  dlmf_25_12_E7(T,x)
        results[q] = if haskey(results,q) results[q]+1 else 1 end
        n -= 1
    end

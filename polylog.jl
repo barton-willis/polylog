@@ -12,9 +12,6 @@ import Base.eps
 import Base.BigFloat
 eps(::Type{Complex{T}}) where T <: AbstractFloat = eps(T)
 
-# convert a complex to a bigfloat
-BigFloat(x::Complex) = BigFloat(real(x)) + BigFloat(imag(x))im
-
 """
   clog(x::Number)
 
