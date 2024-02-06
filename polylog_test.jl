@@ -2,10 +2,20 @@
 # transform the input to gain better convergence. Such tests are not particularly
 # good.
 
-# A modified relative difference function. Maybe this needs to be modified
-# for denormal numbers?
-function rd(a,b)
+# A modified relative difference function. When both |a| >= 1 and |b| >= 1 and
+# a & b are real, return abs(a-b)/(ε * min(|a|, |b|))
+
+#Maybe this needs to be modified for denormal numbers?
+function rd(a::Real,b::Real)
+   if isinf(a) || isinf(b) || isnan(a) || isnan(b)
+      Inf
+   else
     floor(Int64, abs(a-b)/(eps(typeof(a)) * max(1, min(abs(a),abs(b)))))
+   end
+end
+
+function rd(a::Number,b::Number)
+     max(rd(real(a),real(b)), rd(imag(a),imag(b)))
 end
 
 function test_report(results)
@@ -61,7 +71,7 @@ end
 
 # http://dlmf.nist.gov/25.12.E5
 function dlmf_25_12_E5(T,z,m::Int64)
-   if abs(z) < 1 && m > 0 
+   if abs(z) < 1 && m > 0
       s = zero(T)
       k = 0
       while k < m
@@ -79,7 +89,8 @@ function polylog2_test3(T::DataType,n::Int64)
    results = Dict()
    while n > 0
        x = convert(T, rand()*cis(2*pi*rand()))
-       q = dlmf_25_12_E5(T,x,rand(1:4))
+       kk = rand(1:4)
+       q = dlmf_25_12_E5(T,x,kk)
        results[q] = if haskey(results,q) results[q]+1 else 1 end
        n -= 1
    end
