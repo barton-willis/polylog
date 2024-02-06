@@ -10,8 +10,8 @@
 
 - The same code is used for real and complex `binary16`, `binary32`, `binary64`, and `bigfloat` numbers.
 
-- The method uses a sequence that converges linearly on the entire complex plane (except at one). Asymptotically, the approximating sequence $\Phi$ satisfies $\Phi_k \sim   L + \mu^k$, for $k \to \infty$, where the magnitude of $\mu$ is bounded by $1/\sqrt{3} \approx 0.577$. Further, The recursion for the sequence $\Phi$ is stable, meaning that asymptotically, all solutions to the recursion are
-subdominant to the particular solution that converges
+- The method uses a sequence that converges linearly on the entire complex plane (except at one). Asymptotically, the approximating sequence $\Phi$ satisfies $\Phi_k \sim   L + a \mu^k$, for $k \to \infty$, where the magnitude of $\mu$ is bounded by $1/\sqrt{3} \approx 0.577$ and $a \in \mathbf{C}$. Further, the recursion for the sequence $\Phi$ is stable, meaning that asymptotically, all solutions to the recursion are
+subdominant to the solution that converges
 to the dilogarithm function.
 
 - The focus of this code is _accuracy over speed_. To boost accuracy, the method uses Kahan summation. Also, it monitors the accuracy of the summation using a running error bound. 
