@@ -95,6 +95,15 @@ end
 
 # We have h = L + c (-x/2)^k. We could exploit this fact to extrapolate the limit
 # and return early.
+
+# It's a fun game to attempt to find the fewest
+# number of Int64 add and multiplies to compute (k+1)(k+2), (k+2)^2, and
+# (k+3)*(k+4). Let's just let it be.
+
+# We could use muladd to evaluate the dotproduct p0q0+p1q1+p2q2, but I'm not sure 
+# we win. Julia's fma function doesn't allow complex arguments, so I'm not sure we
+# gain any accuracy by using fma?
+
 function polylog2_helper(q0::Number, x::Number)
     T = typeof(x)
     #was q0 = x/(1-x/2)
@@ -119,7 +128,6 @@ function polylog2_helper(q0::Number, x::Number)
         p1 = (k+2)^2*s1
         p2 = (k+3)*(k+4)*s0
         q3 = (p0 * q0 + (p1 * q1 + p2 * q2))/(k+4)^2 # not sure of best order to sum.
-
         qq3 = q3 - ks #start Kahan summation
         t = h + qq3
         ks = (t - h) - qq3
