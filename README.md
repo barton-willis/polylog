@@ -14,7 +14,7 @@
 subdominant to the solution that converges
 to the dilogarithm function.
 
-- The focus of this code is _accuracy over speed_. To boost accuracy, the method uses Kahan summation. Also, it monitors the accuracy of the summation using a running error bound. 
+- The focus of this code is _accuracy over speed_. To boost accuracy, the method uses Kahan summation. Also, it monitors the accuracy of the summation using a running error bound.
 
 ## Other
 
