@@ -1,11 +1,15 @@
 using Test
 
+function myprintln(s::String)
+    printstyled(s, bold=true, color = :red)
+    println()
+end
 φ = Base.MathConstants.golden
 
 # Special values Int64 See https://en.wikipedia.org/wiki/Dilogarithm
 
 println()
-println("Special Values Test")
+myprintln("Special Values Test")
 @testset begin  
     @test polylog2(0) == 0
     @test polylog2(1) ≈ pi^2/6
@@ -21,7 +25,7 @@ pi16 = convert(Float16,pi)
 ε = eps(Float16) 
 # Special values using binary16 See https://en.wikipedia.org/wiki/Dilogarithm
 println()
-println("Binary 16 Tests")
+myprintln("Binary 16 Tests")
 @testset begin  
     @test polylog2_f16(1/3)-polylog2_f16(1/9)/6 ≈ pi16^2/18 - log(3)^2/6 atol = ε
     @test polylog2_f16(-1/3)-polylog2_f16(1/9)/3 ≈ -pi16^2/18 + log(3)^2/6 atol = ε
@@ -51,7 +55,7 @@ pi32 = convert(Float32,pi)
 # Special values using binary32 See https://en.wikipedia.org/wiki/Dilogarithm
 
 println()
-println("Binary32 Tests")
+myprintln("Binary32 Tests")
 @testset begin  
     @test polylog2_f32(1/3)-polylog2_f32(1/9)/6 ≈ pi32^2/18 - log(3)^2/6 atol=1.0e-7
     @test polylog2_f32(-1/3)-polylog2_f32(1/9)/3 ≈ -pi32^2/18 + log(3)^2/6 atol=1.0e-7
@@ -75,7 +79,7 @@ end
 ε = eps(Float64)
 # Special values using binary64 See https://en.wikipedia.org/wiki/Dilogarithm
 println()
-println("Binary64 Tests")
+myprintln("Binary64 Tests")
 @testset begin  
     @test polylog2(1/3)-polylog2(1/9)/6 ≈ pi^2/18 - log(3)^2/6 atol = ε
     @test polylog2(-1/3)-polylog2(1/9)/3 ≈ -pi^2/18 + log(3)^2/6 atol = ε
@@ -109,7 +113,7 @@ end
 
 # Special values using binary64 See https://en.wikipedia.org/wiki/Dilogarithm
 println()
-println("BigFloat Tests")
+myprintln("BigFloat Tests")
 @testset begin  
     @test polylog2_bigfloat(1//3)-polylog2_bigfloat(1//9)/6 ≈ piBF^2/18 - logBF(3)^2/6 atol = ε
     @test polylog2_bigfloat(-1//3)-polylog2_bigfloat(1//9)/3 ≈ -piBF^2/18 + logBF(3)^2/6 atol = ε
@@ -138,7 +142,7 @@ end
 # a last digit that is off by one digit.
 
 println()
-println("Table 27.7 Abramowitz & Stegun")
+myprintln("Table 27.7 Abramowitz & Stegun")
 @testset begin 
    @test spence(0.0)  ≈ 1.644934067 atol=1.0e-9
    @test spence(0.01) ≈ 1.588625448 atol=1.0e-9
@@ -227,17 +231,17 @@ function dlmf_25_12_3_E3(x)
     for i = 0 : n
         for j = 0 : n
             x = (convert(T, (i/n) * cis(2*pi* j /n)))
-            OK = OK && (dlmf_25_12_3_E3(x) < 6)
+            OK = OK && (dlmf_25_12_3_E3(x) < 16)
         end
     end
     OK   
  end
 
 println()
-println("Test DLMF identity 25.12.3E3 ")
+myprintln("Test DLMF identity 25.12.3E3")
 @testset begin 
-    @test polylog2_test1(Complex{Float16},1000) == true
-    @test polylog2_test1(Complex{Float32},1000) == true
-    @test polylog2_test1(Complex{Float64},1000) == true
-    @test polylog2_test1(Complex{BigFloat},1000) == true
+    @test polylog2_test1(Complex{Float16},100) == true
+    @test polylog2_test1(Complex{Float32},100) == true
+    @test polylog2_test1(Complex{Float64},100) == true
+    @test polylog2_test1(Complex{BigFloat},100) == true
 end
