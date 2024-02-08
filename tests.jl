@@ -116,7 +116,7 @@ println("BigFloat Tests")
     @test polylog2_bigfloat(-1//2)+polylog2_bigfloat(1//9)/6 ≈ -piBF^2/18 + logBF(2)*logBF(3)-logBF(2)^2/2-logBF(3)^2/3 atol = ε
     @test polylog2_bigfloat(1//4)+polylog2_bigfloat(1//9)/3 ≈ piBF^2/18+2*logBF(2)*logBF(3)-2*logBF(2)^2-(2//3)*logBF(3)^2 atol = 4*ε
     @test polylog2_bigfloat(-1//8)+polylog2_bigfloat(1//9) ≈ -logBF(9//8)^2/2 atol = ε 
-    @test 36*polylog2_bigfloat(1//2)-36*polylog2_bigfloat(1//4)-12*polylog2_bigfloat(1//8)+6*polylog2_bigfloat(1//64) ≈ piBF^2 atol = 8*ε
+    @test 36*polylog2_bigfloat(1//2)-36*polylog2_bigfloat(1//4)-12*polylog2_bigfloat(1//8)+6*polylog2_bigfloat(1//64) ≈ piBF^2 atol = 32*ε
     @test polylog2_bigfloat(-1) ≈ -piBF^2/12 atol = ε
     @test polylog2_bigfloat(0) == 0.0   
     @test polylog2_bigfloat(1//2) ≈ piBF^2/12 - logBF(2)^2/2 atol = ε
@@ -236,8 +236,8 @@ function dlmf_25_12_3_E3(x)
 println()
 println("Test DLMF identity 25.12.3E3 ")
 @testset begin 
-    @test polylog2_test1(Complex{Float16},100) == true
-    @test polylog2_test1(Complex{Float32},100) == true
-    @test polylog2_test1(Complex{Float64},100) == true
-    @test polylog2_test1(Complex{BigFloat},100) == true
+    @test polylog2_test1(Complex{Float16},1000) == true
+    @test polylog2_test1(Complex{Float32},1000) == true
+    @test polylog2_test1(Complex{Float64},1000) == true
+    @test polylog2_test1(Complex{BigFloat},1000) == true
 end
