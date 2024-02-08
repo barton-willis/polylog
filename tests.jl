@@ -159,3 +159,51 @@ println("Table 27.7 Abramowitz & Stegun")
    @test spence(0.49) ≈ 0.596165361 atol=1.0e-9
    @test spence(0.50) ≈ 0.582240526 atol=1.0e-9
 end
+
+# A modified relative difference function. When both |a| >= 1 and |b| >= 1 and
+# a & b are real, return abs(a-b)/(ε * min(|a|, |b|))
+
+#Maybe this needs to be modified for denormal numbers?
+function rd(a::Real,b::Real)
+    if isinf(a) || isinf(b) || isnan(a) || isnan(b)
+       Inf
+    else
+     floor(Int64, abs(a-b)/(eps(typeof(a)) * max(1, min(abs(a),abs(b)))))
+    end
+ end
+ 
+ function rd(a::Number,b::Number)
+      max(rd(real(a),real(b)), rd(imag(a),imag(b)))
+ end
+
+ # Test the identity http://dlmf.nist.gov/25.12.E3 .
+# This identity is valid off [1,infinity). For a input in [1,infinity),
+# return true.
+function dlmf_25_12_3_E3(x)
+    if imag(x)==0 && real(x) >= 1
+       true
+    else
+      rd(polylog2(x) + polylog2(x/(x-1)), -log(1-x)^2 / 2)
+    end
+ end
+ 
+ # Test dlmf_25_12_3_E3 inside the unit circle.
+ function polylog2_test1(T::DataType,n::Int64)
+    OK = true
+    for i = 0 : n
+        for j = 0 : n
+            x = (convert(T, (i/n) * cis(2*pi* j /n)))
+            OK = OK && (dlmf_25_12_3_E3(x) < 8)
+        end
+    end
+    OK   
+ end
+
+ println()
+println("Test DLMF identity 25.12.3E3 ")
+@testset begin 
+    @test polylog2_test1(Complex{Float16},1000) == true
+    @test polylog2_test1(Complex{Float32},1000) == true
+    @test polylog2_test1(Complex{Float64},1000) == true
+
+end

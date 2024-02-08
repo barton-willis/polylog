@@ -20,8 +20,10 @@ a complex and then dispatch log on x. This function is _not_
 intended to be a user-level function.
 """
 function clog(x::Number)
-    if isreal(x) && x > 0
-        log(x)
+    # careful: for example 0.6 + 0.0im tests as real, but we don't want to send
+    # 0.6 + 0.0im to log.
+    if isreal(x) && real(x) > 0
+        log(real(x))
     else
         log(Complex(x))
     end
@@ -81,7 +83,7 @@ function polylog2(x::Number)
     else #do x -> 1-x transformation
         q0 = 2 * ((one(T) - x) / (one(T) + x))
         f = polylog2_helper(q0, one(T) - x)
-        # I don't think clog(1-x)-->log1p(-x) is a win?
+        # I don't think chaning clog(1-x) to log1p(-x) is a win?
         -f[1] + convert(T, pi)^2 / 6 - clog(x) * clog(one(T) - x), f[2]
     end
     if R[2]
@@ -96,13 +98,12 @@ end
 # We have h = L + c (-x/2)^k. We could exploit this fact to extrapolate the limit
 # and return early.
 
-# It's a fun game to attempt to find the fewest
-# number of Int64 add and multiplies to compute (k+1)(k+2), (k+2)^2, and
-# (k+3)*(k+4). Let's just let it be.
+# It's a fun game to attempt to find the fewest number of Int64 add and multiplies 
+# to compute (k+1)(k+2), (k+2)^2, and (k+3)*(k+4). Let's just let it be.
 
 # We could use muladd to evaluate the dotproduct p0q0+p1q1+p2q2, but I'm not sure 
 # we win. Julia's fma function doesn't allow complex arguments, so I'm not sure we
-# gain any accuracy by using fma?
+# gain any accuracy by using muladd
 
 function polylog2_helper(q0::Number, x::Number)
     T = typeof(x)
