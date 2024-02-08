@@ -96,8 +96,42 @@ println("Binary64 Tests")
     @test polylog2(φ^2) ≈ -11*pi^2/15 - log(Complex(-φ))^2 atol = 4*ε
 end
 
+ε = eps(BigFloat)
+piBF = convert(BigFloat,pi)
+φBF = convert(BigFloat,φ)
+function polylog2_bigfloat(x)
+    polylog2(convert(BigFloat, x))
+end
+
+function logBF(x)
+    clog(convert(BigFloat,x))
+end
+
+# Special values using binary64 See https://en.wikipedia.org/wiki/Dilogarithm
+println()
+println("BigFloat Tests")
+@testset begin  
+    @test polylog2_bigfloat(1//3)-polylog2_bigfloat(1//9)/6 ≈ piBF^2/18 - logBF(3)^2/6 atol = ε
+    @test polylog2_bigfloat(-1//3)-polylog2_bigfloat(1//9)/3 ≈ -piBF^2/18 + logBF(3)^2/6 atol = ε
+    @test polylog2_bigfloat(-1//2)+polylog2_bigfloat(1//9)/6 ≈ -piBF^2/18 + logBF(2)*logBF(3)-logBF(2)^2/2-logBF(3)^2/3 atol = ε
+    @test polylog2_bigfloat(1//4)+polylog2_bigfloat(1//9)/3 ≈ piBF^2/18+2*logBF(2)*logBF(3)-2*logBF(2)^2-(2//3)*logBF(3)^2 atol = 4*ε
+    @test polylog2_bigfloat(-1//8)+polylog2_bigfloat(1//9) ≈ -logBF(9//8)^2/2 atol = ε 
+    @test 36*polylog2_bigfloat(1//2)-36*polylog2_bigfloat(1//4)-12*polylog2_bigfloat(1//8)+6*polylog2_bigfloat(1//64) ≈ piBF^2 atol = 8*ε
+    @test polylog2_bigfloat(-1) ≈ -piBF^2/12 atol = ε
+    @test polylog2_bigfloat(0) == 0.0   
+    @test polylog2_bigfloat(1//2) ≈ piBF^2/12 - logBF(2)^2/2 atol = ε
+    @test polylog2_bigfloat(1) ≈ piBF^2/6 atol = ε 
+    @test polylog2_bigfloat(-1/φBF) ≈ -piBF^2/15 + logBF(φ)^2/2 atol = ε
+    @test polylog2_bigfloat(-φBF) ≈ -piBF^2/10 - logBF(φ)^2 atol = ε
+    @test polylog2_bigfloat(2-φBF) ≈ piBF^2/15 - logBF(φ)^2 atol = ε
+    @test polylog2_bigfloat(1/φBF) ≈ piBF^2/10 - logBF(φ)^2 atol = ε 
+    @test polylog2_bigfloat(sqrt(convert(BigFloat,2))-1)-polylog2_bigfloat(1-sqrt(convert(BigFloat,2))) ≈ piBF^2/8 - logBF(1+sqrt(convert(BigFloat,2)))^2/2 atol = 4*ε
+    @test polylog2_bigfloat(φBF) ≈ (11*piBF^2)/15 + logBF(Complex(-1/φBF))^2/2 atol = 4*ε
+    @test polylog2_bigfloat(φBF^2) ≈ -11*piBF^2/15 - log(Complex(-φBF))^2 atol = 4*ε
+end
+
 function spence(x) 
-    polylog2(1-x)
+    polylog2_bigfloat(1-x)
 end
 
 # Table 27.7 Abramowitz & Stegun. There are four table values with
@@ -193,7 +227,7 @@ function dlmf_25_12_3_E3(x)
     for i = 0 : n
         for j = 0 : n
             x = (convert(T, (i/n) * cis(2*pi* j /n)))
-            OK = OK && (dlmf_25_12_3_E3(x) < 8)
+            OK = OK && (dlmf_25_12_3_E3(x) < 6)
         end
     end
     OK   
@@ -205,5 +239,5 @@ println("Test DLMF identity 25.12.3E3 ")
     @test polylog2_test1(Complex{Float16},100) == true
     @test polylog2_test1(Complex{Float32},100) == true
     @test polylog2_test1(Complex{Float64},100) == true
-
+    @test polylog2_test1(Complex{BigFloat},100) == true
 end
