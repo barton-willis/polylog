@@ -2,21 +2,10 @@ using Test
 
 φ = Base.MathConstants.golden
 
-function spence(x) 
-    polylog2(1-x)
-end
-
-# Table 27.7 Abramowitz & Stegun
-@testset begin 
-    @test spence(0.0) ≈ 1.644934067 atol=1.0e-9
-    @test spence(0.01) ≈ 1.588625448 atol=1.0e-9
-    @test spence(0.02) ≈ 1.545799712 atol=1.0e-9
-    @test spence(0.03) ≈ 1.507899041 atol=1.0e-9
-    @test spence(0.04) ≈ 1.473125860 atol=1.0e-9
-    @test spence(0.05) ≈ 1.440633797 atol=1.0e-9
-    @test spence(0.06) ≈ 1.409928300 atol=1.0e-9
- end
 # Special values Int64 See https://en.wikipedia.org/wiki/Dilogarithm
+
+println()
+println("Special Values Test")
 @testset begin  
     @test polylog2(0) == 0
     @test polylog2(1) ≈ pi^2/6
@@ -26,25 +15,31 @@ end
 function polylog2_f16(x) 
     polylog2(convert(Float16,x))
 end
-# Special values using binary32 See https://en.wikipedia.org/wiki/Dilogarithm
+
+pi16 = convert(Float16,pi)
+φ16 = convert(Float16,φ)
+ε = eps(Float16) 
+# Special values using binary16 See https://en.wikipedia.org/wiki/Dilogarithm
+println()
+println("Binary 16 Tests")
 @testset begin  
-    @test polylog2_f16(1/3)-polylog2_f16(1/9)/6 ≈ pi^2/18 - log(3)^2/6
-    @test polylog2_f16(-1/3)-polylog2_f16(1/9)/3 ≈ -pi^2/18 + log(3)^2/6
-    @test polylog2_f16(-1/2)+polylog2_f16(1/9)/6 ≈ -pi^2/18 + log(2)*log(3)-log(2)^2/2-log(3)^2/3
-    @test polylog2_f16(1/4)+polylog2_f16(1/9)/3 ≈ pi^2/18+2*log(2)*log(3)-2*log(2)^2-(2/3)*log(3)^2
-    @test polylog2_f16(-1/8)+polylog2_f16(1/9) ≈ -log(9/8)^2/2
-    @test 36*polylog2_f16(1/2)-36*polylog2_f16(1/4)-12*polylog2_f16(1/8)+6*polylog2_f16(1/64) ≈ pi^2
-    @test polylog2_f16(-1.0) ≈ -pi^2/12
-    @test polylog2_f16(0.0) == 0.0   
-    @test polylog2_f16(1/2) ≈ pi^2/12 - log(2)^2/2
-    @test polylog2_f16(1.0) ≈ pi^2/6
-    @test polylog2_f16(-1/φ) ≈ -pi^2/15 + log(φ)^2/2
-    @test polylog2_f16(-φ) ≈ -pi^2/10 - log(φ)^2
-    @test polylog2_f16(2-φ) ≈ pi^2/15 - log(φ)^2
-    @test polylog2_f16(1/φ) ≈ pi^2/10 - log(φ)^2
-    @test polylog2_f16(sqrt(2)-1)-polylog2_f16(1-sqrt(2)) ≈ pi^2/8 - log(1+sqrt(2))^2/2 
-    @test polylog2_f16(convert(Float64,φ)) ≈ 11*pi^2/15 + log(Complex(-1/φ))^2/2
-    @test polylog2_f16(φ^2) ≈ -11*pi^2/15 - log(Complex(-φ))^2
+    @test polylog2_f16(1/3)-polylog2_f16(1/9)/6 ≈ pi16^2/18 - log(3)^2/6 atol = ε
+    @test polylog2_f16(-1/3)-polylog2_f16(1/9)/3 ≈ -pi16^2/18 + log(3)^2/6 atol = ε
+    @test polylog2_f16(-1/2)+polylog2_f16(1/9)/6 ≈ -pi16^2/18 + log(2)*log(3)-log(2)^2/2-log(3)^2/3 atol = ε 
+    @test polylog2_f16(1/4)+polylog2_f16(1/9)/3 ≈ pi16^2/18+2*log(2)*log(3)-2*log(2)^2-(2/3)*log(3)^2 atol = ε
+    @test polylog2_f16(-1/8)+polylog2_f16(1/9) ≈ -log(9/8)^2/2 atol = ε 
+    @test 36*polylog2_f16(1/2)-36*polylog2_f16(1/4)-12*polylog2_f16(1/8)+6*polylog2_f16(1/64) ≈ pi16^2 atol = ε
+    @test polylog2_f16(-1.0) ≈ -pi16^2/12 atol = ε
+    @test polylog2_f16(0.0) == 0.0 
+    @test polylog2_f16(1/2) ≈ pi16^2/12 - log(2)^2/2 atol = ε
+    @test polylog2_f16(1.0) ≈ pi16^2/6 atol = ε
+    @test polylog2_f16(-1/φ16) ≈ -pi16^2/15 + log(φ16)^2/2 atol = ε
+    @test polylog2_f16(-φ16) ≈ -pi^2/10 - log(φ)^2 atol = ε
+    @test polylog2_f16(2-φ16) ≈ pi16^2/15 - log(φ)^2 atol = ε 
+    @test polylog2_f16(1/φ16) ≈ pi16^2/10 - log(φ16)^2 atol = ε 
+    @test polylog2_f16(sqrt(2)-1)-polylog2_f16(1-sqrt(2)) ≈ pi16^2/8 - log(1+sqrt(2))^2/2 atol = ε
+    @test polylog2_f16(φ16) ≈ 11*pi16^2/15 + clog(-1/φ16)^2/2 atol = 8*ε
+    @test polylog2_f16(φ16^2) ≈ -11*pi16^2/15 - clog(-φ16)^2 atol = 8*ε
 end
 
 function polylog2_f32(x) 
@@ -54,6 +49,9 @@ end
 pi32 = convert(Float32,pi)
 φ32 = convert(Float32,φ)
 # Special values using binary32 See https://en.wikipedia.org/wiki/Dilogarithm
+
+println()
+println("Binary32 Tests")
 @testset begin  
     @test polylog2_f32(1/3)-polylog2_f32(1/9)/6 ≈ pi32^2/18 - log(3)^2/6 atol=1.0e-7
     @test polylog2_f32(-1/3)-polylog2_f32(1/9)/3 ≈ -pi32^2/18 + log(3)^2/6 atol=1.0e-7
@@ -74,34 +72,90 @@ pi32 = convert(Float32,pi)
     @test polylog2_f32(φ^2) ≈ -11*pi32^2/15 - clog(-φ32)^2 atol=5.0e-7
 end
 
+ε = eps(Float64)
 # Special values using binary64 See https://en.wikipedia.org/wiki/Dilogarithm
+println()
+println("Binary64 Tests")
 @testset begin  
-    @test polylog2(1/3)-polylog2(1/9)/6 ≈ pi^2/18 - log(3)^2/6
-    @test polylog2(-1/3)-polylog2(1/9)/3 ≈ -pi^2/18 + log(3)^2/6
-    @test polylog2(-1/2)+polylog2(1/9)/6 ≈ -pi^2/18 + log(2)*log(3)-log(2)^2/2-log(3)^2/3
-    @test polylog2(1/4)+polylog2(1/9)/3 ≈ pi^2/18+2*log(2)*log(3)-2*log(2)^2-(2/3)*log(3)^2
-    @test polylog2(-1/8)+polylog2(1/9) ≈ -log(9/8)^2/2
-    @test 36*polylog2(1/2)-36*polylog2(1/4)-12*polylog2(1/8)+6*polylog2(1/64) ≈ pi^2
-    @test polylog2(-1.0) ≈ -pi^2/12
+    @test polylog2(1/3)-polylog2(1/9)/6 ≈ pi^2/18 - log(3)^2/6 atol = ε
+    @test polylog2(-1/3)-polylog2(1/9)/3 ≈ -pi^2/18 + log(3)^2/6 atol = ε
+    @test polylog2(-1/2)+polylog2(1/9)/6 ≈ -pi^2/18 + log(2)*log(3)-log(2)^2/2-log(3)^2/3 atol = ε
+    @test polylog2(1/4)+polylog2(1/9)/3 ≈ pi^2/18+2*log(2)*log(3)-2*log(2)^2-(2/3)*log(3)^2 atol = 4*ε
+    @test polylog2(-1/8)+polylog2(1/9) ≈ -log(9/8)^2/2 atol = ε 
+    @test 36*polylog2(1/2)-36*polylog2(1/4)-12*polylog2(1/8)+6*polylog2(1/64) ≈ pi^2 atol = 8*ε
+    @test polylog2(-1.0) ≈ -pi^2/12 atol = ε
     @test polylog2(0.0) == 0.0   
-    @test polylog2(1/2) ≈ pi^2/12 - log(2)^2/2
-    @test polylog2(1.0) ≈ pi^2/6
-    @test polylog2(-1/φ) ≈ -pi^2/15 + log(φ)^2/2
-    @test polylog2(-φ) ≈ -pi^2/10 - log(φ)^2
-    @test polylog2(2-φ) ≈ pi^2/15 - log(φ)^2
-    @test polylog2(1/φ) ≈ pi^2/10 - log(φ)^2
-    @test polylog2(sqrt(2)-1)-polylog2(1-sqrt(2)) ≈ pi^2/8 - log(1+sqrt(2))^2/2 
-    @test polylog2(convert(Float64,φ)) ≈ 11*pi^2/15 + log(Complex(-1/φ))^2/2
-    @test polylog2(φ^2) ≈ -11*pi^2/15 - log(Complex(-φ))^2
+    @test polylog2(1/2) ≈ pi^2/12 - log(2)^2/2 atol = ε
+    @test polylog2(1.0) ≈ pi^2/6 atol = ε 
+    @test polylog2(-1/φ) ≈ -pi^2/15 + log(φ)^2/2 atol = ε
+    @test polylog2(-φ) ≈ -pi^2/10 - log(φ)^2 atol = ε
+    @test polylog2(2-φ) ≈ pi^2/15 - log(φ)^2 atol = ε
+    @test polylog2(1/φ) ≈ pi^2/10 - log(φ)^2 atol = ε 
+    @test polylog2(sqrt(2)-1)-polylog2(1-sqrt(2)) ≈ pi^2/8 - log(1+sqrt(2))^2/2 atol = 4*ε
+    @test polylog2(convert(Float64,φ)) ≈ 11*pi^2/15 + log(Complex(-1/φ))^2/2 atol = 4*ε
+    @test polylog2(φ^2) ≈ -11*pi^2/15 - log(Complex(-φ))^2 atol = 4*ε
 end
 
-# Table 27.7 Abramowitz & Stegun
+function spence(x) 
+    polylog2(1-x)
+end
+
+# Table 27.7 Abramowitz & Stegun. There are four table values with
+# a last digit that is off by one digit.
+
+println()
+println("Table 27.7 Abramowitz & Stegun")
 @testset begin 
-   @test spence(0.0) ≈ 1.644934067 atol=1.0e-9
+   @test spence(0.0)  ≈ 1.644934067 atol=1.0e-9
    @test spence(0.01) ≈ 1.588625448 atol=1.0e-9
    @test spence(0.02) ≈ 1.545799712 atol=1.0e-9
    @test spence(0.03) ≈ 1.507899041 atol=1.0e-9
    @test spence(0.04) ≈ 1.473125860 atol=1.0e-9
    @test spence(0.05) ≈ 1.440633797 atol=1.0e-9
    @test spence(0.06) ≈ 1.409928300 atol=1.0e-9
+   @test spence(0.07) ≈ 1.380685041 atol=1.0e-9
+   @test spence(0.08) ≈ 1.352675161 atol=1.0e-9
+   @test spence(0.09) ≈ 1.325728728 atol=1.0e-9
+   @test spence(0.1)  ≈ 1.299714723 atol=1.0e-9
+   @test spence(0.11) ≈ 1.274529160 atol=1.0e-9
+   @test spence(0.12) ≈ 1.250087584 atol=1.0e-9
+   @test spence(0.13) ≈ 1.226320101 atol=1.0e-9
+   @test spence(0.14) ≈ 1.203167961 atol=1.0e-9
+   @test spence(0.15) ≈ 1.180581124 atol=1.0e-9
+   @test spence(0.16) ≈ 1.158516487 atol=1.0e-9 # table wrong last digit
+   @test spence(0.17) ≈ 1.136936560 atol=1.0e-9
+   @test spence(0.18) ≈ 1.115808451 atol=1.0e-9
+   @test spence(0.19) ≈ 1.095103088 atol=1.0e-9
+   @test spence(0.20) ≈ 1.074794600 atol=1.0e-9
+
+   @test spence(0.21) ≈ 1.054859830 atol=1.0e-9
+   @test spence(0.22) ≈ 1.035277934 atol=1.0e-9
+   @test spence(0.23) ≈ 1.016030062 atol=1.0e-9
+   @test spence(0.24) ≈ 0.997099088 atol=1.0e-9
+   @test spence(0.25) ≈ 0.978469393 atol=1.0e-9
+   @test spence(0.26) ≈ 0.960126675 atol=1.0e-9
+   @test spence(0.27) ≈ 0.942057798 atol=1.0e-9
+   @test spence(0.28) ≈ 0.924250654 atol=1.0e-9
+   @test spence(0.29) ≈ 0.906694053 atol=1.0e-9
+   @test spence(0.3) ≈ 0.889377624 atol=1.0e-9
+   @test spence(0.31) ≈ 0.872291733 atol=1.0e-9
+   @test spence(0.32) ≈ 0.855427404 atol=1.0e-9
+   @test spence(0.33) ≈ 0.838776261 atol=1.0e-9
+   @test spence(0.34) ≈ 0.822330471 atol=1.0e-9
+   @test spence(0.35) ≈ 0.806082689 atol=1.0e-9 # table wrong last digit
+   @test spence(0.36) ≈ 0.790026024 atol=1.0e-9
+   @test spence(0.37) ≈ 0.774153992 atol=1.0e-9
+   @test spence(0.38) ≈ 0.758460483 atol=1.0e-9 # table wrong last digit
+   @test spence(0.39) ≈ 0.742939737 atol=1.0e-9
+   @test spence(0.40) ≈ 0.727586308 atol=1.0e-9
+   @test spence(0.41) ≈ 0.712395042 atol=1.0e-9
+   @test spence(0.42) ≈ 0.697361058 atol=1.0e-9
+   @test spence(0.43) ≈ 0.682479725 atol=1.0e-9
+   @test spence(0.44) ≈ 0.667746644 atol=1.0e-9
+   @test spence(0.45) ≈ 0.653157631 atol=1.0e-9 # table wrong last digit
+   @test spence(0.46) ≈ 0.638708705 atol=1.0e-9
+   @test spence(0.47) ≈ 0.624396071 atol=1.0e-9
+   @test spence(0.48) ≈ 0.610216108 atol=1.0e-9
+   @test spence(0.49) ≈ 0.596165361 atol=1.0e-9
+   @test spence(0.50) ≈ 0.582240526 atol=1.0e-9
 end
