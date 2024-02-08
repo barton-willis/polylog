@@ -120,6 +120,7 @@ function polylog2_helper(q0::Number, x::Number)
     s0 = x / (x - 2)
     s1 = s0^2
     s2 = s0^3
+    ε = eps(T)
     while k < N && streak < 5 && !isnan(h) && !isinf(h)  #magic number 5
         #was q3 = (-(k+1)*(k+2)*q0*x^3+(k+2)^2*q1*(x-2)*x^2+(k+3)*(k+4)*q2*(x-2)^2*x)/((k+4)^2*(x-2)^3)
 
@@ -132,7 +133,7 @@ function polylog2_helper(q0::Number, x::Number)
         qq3 = q3 - ks #start Kahan summation
         t = h + qq3
         ks = (t - h) - qq3
-        streak = if (h == t) streak + 1 else 0 end
+        streak = if (h == t) || isapprox(h,t,atol=ε) streak + 1 else 0 end
         h = t #end Kahan summation	
         cndR += abs(real(q3))
         cndI += abs(imag(q3))

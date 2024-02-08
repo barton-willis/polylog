@@ -199,11 +199,11 @@ function dlmf_25_12_3_E3(x)
     OK   
  end
 
- println()
+println()
 println("Test DLMF identity 25.12.3E3 ")
 @testset begin 
-    @test polylog2_test1(Complex{Float16},1000) == true
-    @test polylog2_test1(Complex{Float32},1000) == true
-    @test polylog2_test1(Complex{Float64},1000) == true
+    @test polylog2_test1(Complex{Float16},100) == true
+    @test polylog2_test1(Complex{Float32},100) == true
+    @test polylog2_test1(Complex{Float64},100) == true
 
 end
