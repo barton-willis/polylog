@@ -245,3 +245,26 @@ myprintln("Test DLMF identity 25.12.3E3")
     @test polylog2_test1(Complex{Float64},100) == true
     @test polylog2_test1(Complex{BigFloat},100) == true
 end
+
+using PolyLog
+
+function compare_polylog2(T,n)
+    OK = true
+    tol = 16*eps(T)
+    for i = 1 : n
+        for j = 0 : n
+            x = (convert(T, (i/n) * cis(2*pi* j /n)))
+            OK = OK && isapprox(polylog2(x), li2(x), atol=tol, rtol=tol)
+        end
+    end
+  OK      
+end
+
+println()
+myprintln("Comparision to standard 25.12.3E3")
+@testset begin 
+    @test compare_polylog2(Complex{Float16},100) == true
+    @test compare_polylog2(Complex{Float32},100) == true
+    @test compare_polylog2(Complex{Float64},100) == true
+    @test compare_polylog2(Complex{BigFloat},100) == true
+end
