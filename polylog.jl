@@ -1,4 +1,4 @@
-# Barton Willis, Copyright 2019, 2024
+# Barton Willis, 2019, 2024
 
 # This work is licensed under the CC0 1.0 Universal license.
 
