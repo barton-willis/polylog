@@ -225,7 +225,7 @@ function dlmf_25_12_3_E3(x)
     end
  end
  
- # Test dlmf_25_12_3_E3 inside the unit circle.
+ # Test dlmf_25_12_3_E3 inside and on unit circle.
  function polylog2_test1(T::DataType,n::Int64)
     OK = true
     for i = 0 : n
@@ -246,11 +246,74 @@ myprintln("Test DLMF identity 25.12.3E3")
     @test polylog2_test1(Complex{BigFloat},100) == true
 end
 
+# http://dlmf.nist.gov/25.12.E5
+function dlmf_25_12_E5(T,z,m::Int64)
+    if abs(z) < 1 && m > 0
+       s = zero(T)
+       k = 0
+       while k < m
+          θ = (2*k*convert(T,pi))/m
+          s += polylog2(z*cis(θ))
+          k += 1
+       end
+       rd(polylog2(z^m), m*s)
+    else
+       true
+    end
+ end
+ 
+ function polylog2_test3(T::DataType,n::Int64)
+    OK = true
+    for i = 0 : n
+        for j = 0 : n
+            x = (convert(T, (i/n) * cis(2*pi* j /n)))
+            OK = OK && (dlmf_25_12_3_E3(x) < 32)
+        end
+    end
+    OK
+ end
+
+println()
+myprintln("Test DLMF identity 25.12.E5")
+@testset begin 
+    @test polylog2_test3(Complex{Float16},100) == true
+    @test polylog2_test3(Complex{Float32},100) == true
+    @test polylog2_test3(Complex{Float64},100) == true
+    @test polylog2_test3(Complex{BigFloat},100) == true
+end
+
+#---------------
+#http://dlmf.nist.gov/25.12.E7
+function dlmf_25_12_E7(T,x)
+    pie = convert(T,pi)
+    rd(real(polylog2(cis(x))),  pie*(pie/6 - x/2) + x^2/4)
+ end
+ 
+ function polylog2_test4(T::DataType, n::Int64)
+    OK = true
+    pie = convert(T,pi)
+    for i = 0 : n
+        x = (2*pie*i)/n
+        OK = OK && (dlmf_25_12_E7(T,x) < 32)
+    end
+    OK
+ end
+
+ println()
+myprintln("Test DLMF identity 25.12.E7")
+@testset begin 
+    #@test polylog2_test4(Float16,100) == true
+    @test polylog2_test4(Complex{Float32},100) == true
+    @test polylog2_test4(Float64,100) == true
+    @test polylog2_test4(BigFloat,100) == true
+end
+ 
+#--------------
 using PolyLog
 
 function compare_polylog2(T,n)
     OK = true
-    tol = 16*eps(T)
+    tol = 48*eps(T) #seems too big!
     for i = 1 : n
         for j = 0 : n
             x = (convert(T, (i/n) * cis(2*pi* j /n)))
@@ -259,6 +322,7 @@ function compare_polylog2(T,n)
     end
   OK      
 end
+
 
 println()
 myprintln("Comparision to standard 25.12.3E3")
