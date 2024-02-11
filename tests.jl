@@ -385,7 +385,12 @@ myprintln("Multiple precision Tests")
     @test multiple_prec(128*im) == true
 end
 
-    
+println()   
+myprintln("Test Int64 inputs")
+@testset begin
+    @test polylog2(8) == polylog2(8.0)
+    @test polylog2(8 + 5im) == polylog2(8.0 + 5.0im)
+end
 
 
 println()

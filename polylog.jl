@@ -148,3 +148,7 @@ end
 function polylog2(x::Int64)
     polylog2(convert(Float64,x)) 
 end
+
+function polylog2(x::Complex{Int64})
+    polylog2(convert(Complex{Float64},x)) 
+end
