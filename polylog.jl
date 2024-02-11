@@ -22,8 +22,10 @@ intended to be a user-level function.
 function clog(x::Number)
     # careful: for example 0.6 + 0.0im tests as real, but we don't want to send
     # 0.6 + 0.0im to log.
-    if isreal(x) && real(x) > 0
+    if iszero(imag(x)) && real(x) > 0
         log(real(x))
+    elseif iszero(imag(x))
+        log(real(-x)) + convert(typeof(x),pi)*im
     else
         log(Complex(x))
     end

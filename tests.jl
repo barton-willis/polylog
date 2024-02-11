@@ -282,7 +282,6 @@ myprintln("Test DLMF identity 25.12.E5")
     @test polylog2_test3(Complex{BigFloat},100) == true
 end
 
-#---------------
 #http://dlmf.nist.gov/25.12.E7
 function dlmf_25_12_E7(T,x)
     pie = convert(T,pi)
@@ -299,16 +298,42 @@ function dlmf_25_12_E7(T,x)
     OK
  end
 
- println()
+println()
 myprintln("Test DLMF identity 25.12.E7")
 @testset begin 
-    #@test polylog2_test4(Float16,100) == true
-    @test polylog2_test4(Complex{Float32},100) == true
+    @test polylog2_test4(Float16,100) == true
+    @test polylog2_test4(Float32,100) == true
     @test polylog2_test4(Float64,100) == true
     @test polylog2_test4(BigFloat,100) == true
 end
- 
+
 #--------------
+#See https://en.wikipedia.org/wiki/Dilogarithm
+function polylog2_id_1(x)
+    rd(polylog2(x)+polylog2(-x),polylog2(x^2)/2) < 16
+ end
+ 
+ function polylog2_test5(T::DataType,n::Int64)
+       two = convert(T,2)
+       OK = true
+       for i = 0 : n
+        for j = 0 : n
+            x = ((two *i)/n) * cis((two*pi*j)/n)
+            OK = OK &&  polylog2_id_1(x)
+        end
+    end
+    OK
+end
+
+println()
+myprintln("Test Dilogarithm reflection identity")
+@testset begin 
+    @test polylog2_test5(Float16,100) == true
+    @test polylog2_test5(Float32,100) == true
+    @test polylog2_test5(Float64,100) == true
+    @test polylog2_test5(BigFloat,100) == true
+end
+
 using PolyLog
 
 function compare_polylog2(T,n)
@@ -331,4 +356,18 @@ myprintln("Comparision to standard 25.12.3E3")
     @test compare_polylog2(Complex{Float32},100) == true
     @test compare_polylog2(Complex{Float64},100) == true
     @test compare_polylog2(Complex{BigFloat},100) == true
+end
+
+println()
+myprintln("Regression Tests")
+
+@testset begin
+  #  polylog2(Float16(-4.53e-6) - Float16(8.3e-7)*im) #1 
+  @test polylog2(Float16(-4.53e-6) - Float16(8.3e-7)*im) ==  Float16(-4.53e-6) - Float16(8.3e-7)im
+  #  polylog2(0.6 + 0.0im) #3 
+  @test  polylog2(0.6 + 0.0im)  == 0.7275863077163334 + 0.0im
+  #  polylog2(Float16(0.273) - Float16(0.9004)im) #4 
+  @test polylog2(Float16(0.273) - Float16(0.9004)im) == Float16(0.05685) - Float16(0.9385)im
+  #  polylog2(2.25 + 0.0im) =/= polylog2(2.25) #5 
+  @test polylog2(2.25 + 0.0im) == polylog2(2.25)
 end
