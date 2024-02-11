@@ -367,6 +367,27 @@ myprintln("Comparision to standard 25.12.3E3")
     @test compare_polylog2(Complex{BigFloat},100) == true
 end
 
+function multiple_prec(x)
+    y16 = polylog2(convert(Complex{Float16},x))
+    y32 = polylog2(convert(Complex{Float32},x))
+    y64 = polylog2(convert(Complex{Float64},x))
+    ybf = polylog2(convert(Complex{BigFloat},x))
+    isapprox(y16, convert(Complex{Float16},y32), rtol=4*eps(Float16)) &&
+    isapprox(y32, convert(Complex{Float32},y32), rtol=4*eps(Float32)) &&
+    isapprox(y64, convert(Complex{Float64},ybf), rtol=4*eps(Float64))
+end
+
+println()
+myprintln("Multiple precision Tests")
+@testset begin
+    @test multiple_prec(4+8im) == true
+    @test multiple_prec(1/4+im/128) == true
+    @test multiple_prec(128*im) == true
+end
+
+    
+
+
 println()
 myprintln("Regression Tests")
 
