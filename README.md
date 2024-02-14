@@ -10,9 +10,8 @@
 
 - The same code is used for real and complex `binary16`, `binary32`, `binary64`, and `bigfloat` numbers.
 
-- The method uses a sequence that converges linearly on the entire complex plane (except at one). Asymptotically, the approximating sequence $\Phi$ satisfies $\Phi_k \sim   L + a \mu^k$, for $k \to \infty$, where the magnitude of $\mu$ is bounded by $1/\sqrt{3} \approx 0.577$ and $a \in \mathbf{C}$. Further, the recursion for the sequence $\Phi$ is stable, meaning that asymptotically, all solutions to the recursion are
-subdominant to the solution that converges
-to the dilogarithm function.
+- The method uses a sequence that converges linearly on the entire complex plane (except at one). Asymptotically, the sequence $\Phi$ satisfies $\Phi_k \sim   L + a \mu^k$, for $k \to \infty$, where the magnitude of $\mu$ is bounded by $1/\sqrt{3} \approx 0.577$ and $a \in \mathbf{C}$. Further, the recursion for the sequence $\Phi$ is stable, meaning that asymptotically, all solutions to the recursion are
+subdominant to the solution that converges to the dilogarithm function.
 
 - The focus of this code is _accuracy over speed_. To boost accuracy, the method uses Kahan summation. Also, it monitors the accuracy of the summation using a running error bound.
 
@@ -46,8 +45,6 @@ setprecision(BigFloat,128);
 0.2741556778080378663699490634254841514082 + 1.14941606409653637648270733876243611281im
 ~~~
 
- The file `tests.jl` has some tests of special values. These tests make use of the standard Julia unit testing
-format. The file `polylog.jl` has some identity-based tests, but these tests are not (yet) in the form of Julia unit testing.
-So far, I have not attempted to build a Julia package.
+ The file `tests.jl` has some tests of special values and some dilogarithm function identity based tests.
 
 [def]: https://arxiv.org/pdf/1910.06928.pdf
