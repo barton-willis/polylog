@@ -7,7 +7,7 @@
 # dilogarithm function," by Stephanie Harshbarger and Barton Willis.
 # https://arxiv.org/pdf/1910.06928.pdf
 
-# Extend eps.
+# Extend eps to complex numbers.
 import Base.eps
 import Base.BigFloat
 eps(::Type{Complex{T}}) where T <: AbstractFloat = eps(T)
@@ -15,8 +15,8 @@ eps(::Type{Complex{T}}) where T <: AbstractFloat = eps(T)
 """
   clog(x::Number)
 
-When x in (0,infinity) return log(x); otherwise, convert x to 
-a complex and then dispatch log on x. This function is _not_
+When x is in (0,infinity) return log(x); otherwise, convert x to 
+a complex number and then dispatch log on x. This function is _not_
 intended to be a user-level function.
 """
 function clog(x::Number)

@@ -60,29 +60,29 @@ pi32 = convert(Float32,pi)
 function log32(x)
     log(convert(Float32, x))
 end
-
+ε = eps(Float32)
 # Special values using binary32 See https://en.wikipedia.org/wiki/Dilogarithm
 
 println()
 myprintln("Binary32 Tests")
 @testset begin  
-    @test polylog2_f32(1/3)-polylog2_f32(1/9)/6 ≈ pi32^2/18 - log32(3)^2/6 atol=1.0e-7
-    @test polylog2_f32(-1/3)-polylog2_f32(1/9)/3 ≈ -pi32^2/18 + log32(3)^2/6 atol=1.0e-7
-    @test polylog2_f32(-1/2)+polylog2_f32(1/9)/6 ≈ -pi32^2/18 + log32(2)*log32(3)-log32(2)^2/2-log32(3)^2/3 atol=1.0e-7
-    @test polylog2_f32(1/4)+polylog2_f32(1/9)/3 ≈ pi32^2/18+2*log32(2)*log32(3)-2*log32(2)^2-(2/3)*log32(3)^2 atol=1.0e-7
-    @test polylog2_f32(-1/8)+polylog2_f32(1/9) ≈ -log32(9/8)^2/2 atol=1.0e-8
-    @test 36*polylog2_f32(1/2)-36*polylog2_f32(1/4)-12*polylog2_f32(1/8)+6*polylog2_f32(1/64) ≈ pi^2 atol=1.0e-6
-    @test polylog2_f32(-1.0) ≈ -pi32^2/12 atol=1.0e-7
+    @test polylog2_f32(1/3)-polylog2_f32(1/9)/6 ≈ pi32^2/18 - log32(3)^2/6 atol=ε
+    @test polylog2_f32(-1/3)-polylog2_f32(1/9)/3 ≈ -pi32^2/18 + log32(3)^2/6 atol=ε
+    @test polylog2_f32(-1/2)+polylog2_f32(1/9)/6 ≈ -pi32^2/18 + log32(2)*log32(3)-log32(2)^2/2-log32(3)^2/3 atol=ε
+    @test polylog2_f32(1/4)+polylog2_f32(1/9)/3 ≈ pi32^2/18+2*log32(2)*log32(3)-2*log32(2)^2-(2/3)*log32(3)^2 atol=ε
+    @test polylog2_f32(-1/8)+polylog2_f32(1/9) ≈ -log32(9/8)^2/2 atol=ε
+    @test 36*polylog2_f32(1/2)-36*polylog2_f32(1/4)-12*polylog2_f32(1/8)+6*polylog2_f32(1/64) ≈ pi32^2 atol=ε
+    @test polylog2_f32(-1.0) ≈ -pi32^2/12 atol=ε
     @test polylog2_f32(0.0) == 0.0f0 
-    @test polylog2_f32(1/2) ≈ pi32^2/12 - log32(2)^2/2 atol=1.0e-7
-    @test polylog2_f32(1.0) ≈ pi32^2/6 atol=1.0e-6
-    @test polylog2_f32(-1/φ) ≈ -pi32^2/15 + log32(φ32)^2/2 atol=1.0e-7
-    @test polylog2_f32(-φ) ≈ -pi32^2/10 - log32(φ32)^2 atol=5.0e-7
-    @test polylog2_f32(2-φ) ≈ pi32^2/15 - log32(φ32)^2 atol=1.0e-7
-    @test polylog2_f32(1/φ) ≈ pi32^2/10 - log32(φ32)^2 atol=1.0e-7
-    @test polylog2_f32(sqrt(2)-1)-polylog2_f32(1-sqrt(2)) ≈ pi32^2/8 - log32(1+sqrt(2))^2/2 atol=1.0e-7
-    @test polylog2_f32(φ) ≈ 11*pi32^2/15 + clog(-1/φ32)^2/2 atol=5.0e-7
-    @test polylog2_f32(φ^2) ≈ -11*pi32^2/15 - clog(-φ32)^2 atol=5.0e-7
+    @test polylog2_f32(1/2) ≈ pi32^2/12 - log32(2)^2/2 atol=ε
+    @test polylog2_f32(1.0) ≈ pi32^2/6 atol=ε
+    @test polylog2_f32(-1/φ32) ≈ -pi32^2/15 + log32(φ32)^2/2 atol=ε
+    @test polylog2_f32(-φ32) ≈ -pi32^2/10 - log32(φ32)^2 atol=ε
+    @test polylog2_f32(2-φ32) ≈ pi32^2/15 - log32(φ32)^2 atol=ε
+    @test polylog2_f32(1/φ32) ≈ pi32^2/10 - log32(φ32)^2 atol=ε
+    @test polylog2_f32(sqrt(2)-1)-polylog2_f32(1-sqrt(2)) ≈ pi32^2/8 - log32(1+sqrt(2))^2/2 atol=ε
+    @test polylog2_f32(φ32) ≈ 11*pi32^2/15 + clog(-1/φ32)^2/2 atol=ε
+    @test polylog2_f32(φ32^2) ≈ -11*pi32^2/15 - clog(-φ32)^2 atol=4*ε
 end
 
 ε = eps(Float64)
