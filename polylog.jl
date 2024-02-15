@@ -85,7 +85,7 @@ function polylog2(x::Number)
     else #do x -> 1-x transformation
         q0 = 2 * ((one(T) - x) / (one(T) + x))
         f = polylog2_helper(q0, one(T) - x)
-        # I don't think chaning clog(1-x) to log1p(-x) is a win?
+        # I don't think changing clog(1-x) to log1p(-x) is a win?
         -f[1] + convert(T, pi)^2 / 6 - clog(x) * clog(one(T) - x), f[2]
     end
     if R[2]
