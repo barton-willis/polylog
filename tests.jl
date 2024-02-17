@@ -359,7 +359,7 @@ end
 
 
 println()
-myprintln("Comparision to standard 25.12.3E3")
+myprintln("Compare to PolyLog")
 @testset begin 
     @test compare_polylog2(Complex{Float16},100) == true
     @test compare_polylog2(Complex{Float32},100) == true
