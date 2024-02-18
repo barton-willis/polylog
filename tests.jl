@@ -407,4 +407,6 @@ myprintln("Regression Tests")
   @test polylog2(Float16(0.273) - Float16(0.9004)im) == Float16(0.05685) - Float16(0.9385)im
   #  polylog2(2.25 + 0.0im) =/= polylog2(2.25) #5 
   @test polylog2(2.25 + 0.0im) == polylog2(2.25)
+  @test polylog2(0.6) == 0.7275863077163334
+  @test polylog2(0.6 + 0.0im) == 0.7275863077163334 + 0.0im
 end
