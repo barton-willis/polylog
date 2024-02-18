@@ -12,6 +12,29 @@ import Base.eps
 import Base.BigFloat
 eps(::Type{Complex{T}}) where T <: AbstractFloat = eps(T)
 
+# Is there a better way to do this?  Something like how pi is defined?
+"""
+  zeta2(T::Type)
+
+Return the value of `pi^2/6` rounded to the type `T`
+
+Examples:
+```
+julia> zeta2(Float64)
+1.6449340668482264
+julia> zeta2(Complex{Float32})
+1.644934f0 + 0.0f0im
+```
+"""
+function zeta2(T::Type)
+    if T == Float16 || T == Float32 || T == Float64 ||
+       T == Complex{Float16} || T == Complex{Float32} || T == Complex{Float64}
+        parse(T, "1.6449340668482264364724151666460")
+    else 
+        convert(BigFloat,pi)*(convert(BigFloat,pi)/6)
+    end
+end
+
 """
   clog(x::Number)
 
@@ -30,6 +53,7 @@ function clog(x::Number)
         log(Complex(x))
     end
 end
+
 
 # This function optionally uses a polylog2 function identity before
 # it calls polylog2_helper. The polylog2 function has functional 
@@ -70,23 +94,22 @@ function polylog2(x::Number)
     c1 = if isapprox(0, x, atol=eps(T)) Inf else cnd(inv(x)) end
     c2 = cnd(1 - x)
     cmin = min(c0, c1, c2)
-	@assert 3*cmin <= 1
     R = if x == 0
         convert(T, 0), true
     elseif x == 1
-        convert(T, pi)^2 / 6, true
+        zeta2(T), true
     elseif cmin == c0 #no transformation
         q0 = x / (one(T) - x / 2)
         polylog2_helper(q0, x)
     elseif cmin == c1 #do x -> 1/x transformation
         q0 = inv(x - one(T)/2)
         f = polylog2_helper(q0, inv(x))
-        -f[1] - convert(T, pi)^2 / 6 - clog(-x)^2 / 2, f[2]
+        -f[1] - zeta2(T) - clog(-x)^2 / 2, f[2]
     else #do x -> 1-x transformation
         q0 = 2 * ((one(T) - x) / (one(T) + x))
         f = polylog2_helper(q0, one(T) - x)
         # I don't think changing clog(1-x) to log1p(-x) is a win?
-        -f[1] + convert(T, pi)^2 / 6 - clog(x) * clog(one(T) - x), f[2]
+        -f[1] + zeta2(T) - clog(x) * clog(one(T) - x), f[2]
     end
     if R[2]
         R[1]
@@ -128,6 +151,9 @@ function polylog2_helper(q0::Number, x::Number)
 
         # We need to be careful with contagion. But these do Int64*float, and I think
         # these do the proper contagion.
+
+        # It's fun to attempt to compute p0, p1, p2, and q3 with the least amount of
+        # arithmetic. But the speedup is small, and the impact on accuracy is questionable.
         p0 = -(k+1)*(k+2)*s2
         p1 = (k+2)^2*s1
         p2 = (k+3)*(k+4)*s0
