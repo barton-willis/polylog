@@ -81,8 +81,8 @@ myprintln("Binary32 Tests")
     @test polylog2_f32(2-φ32) ≈ pi32^2/15 - log32(φ32)^2 atol=ε
     @test polylog2_f32(1/φ32) ≈ pi32^2/10 - log32(φ32)^2 atol=ε
     @test polylog2_f32(sqrt(2)-1)-polylog2_f32(1-sqrt(2)) ≈ pi32^2/8 - log32(1+sqrt(2))^2/2 atol=ε
-    @test polylog2_f32(φ32) ≈ 11*pi32^2/15 + clog(-1/φ32)^2/2 atol=3*ε
-    @test polylog2_f32(φ32^2) ≈ -11*pi32^2/15 - clog(-φ32)^2 atol=4*ε
+    @test polylog2_f32(φ32) ≈ 11*pi32^2/15 + clog(-1/φ32)^2/2 atol=ε
+    @test polylog2_f32(φ32^2) ≈ -11*pi32^2/15 - clog(-φ32)^2 atol=ε
 end
 
 ε = eps(Float64)
@@ -104,9 +104,9 @@ myprintln("Binary64 Tests")
     @test polylog2(-φ) ≈ -pi^2/10 - log(φ)^2 atol = ε
     @test polylog2(2-φ) ≈ pi^2/15 - log(φ)^2 atol = ε
     @test polylog2(1/φ) ≈ pi^2/10 - log(φ)^2 atol = ε 
-    @test polylog2(sqrt(2)-1)-polylog2(1-sqrt(2)) ≈ pi^2/8 - log(1+sqrt(2))^2/2 atol = 4*ε
-    @test polylog2(convert(Float64,φ)) ≈ 11*pi^2/15 + log(Complex(-1/φ))^2/2 atol = 4*ε
-    @test polylog2(φ^2) ≈ -11*pi^2/15 - log(Complex(-φ))^2 atol = 4*ε
+    @test polylog2(sqrt(2)-1)-polylog2(1-sqrt(2)) ≈ pi^2/8 - log(1+sqrt(2))^2/2 rtol = 2*ε
+    @test polylog2(convert(Float64,φ)) ≈ 11*pi^2/15 + log(Complex(-1/φ))^2/2 rtol = ε
+    @test polylog2(φ^2) ≈ -11*pi^2/15 - log(Complex(-φ))^2 rtol = ε
 end
 
 ε = eps(BigFloat)

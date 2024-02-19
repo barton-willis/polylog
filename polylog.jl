@@ -107,12 +107,12 @@ function polylog2(x::Number)
     elseif cmin == c1 #do x -> 1/x transformation
         q0 = inv(x - one(T)/2)
         f = polylog2_helper(q0, inv(x))
-        -f[1] - zeta2(T) - clog(-x)^2 / 2, f[2]
+        -((f[1] + zeta2(T)) + clog(-x)^2 / 2), f[2]
     else #do x -> 1-x transformation
         q0 = 2 * ((one(T) - x) / (one(T) + x))
         f = polylog2_helper(q0, one(T) - x)
         # I don't think changing clog(1-x) to log1p(-x) is a win?
-        -f[1] + zeta2(T) - clog(x) * clog(one(T) - x), f[2]
+        zeta2(T) - (f[1] + clog(x) * clog(one(T) - x)), f[2]
     end
     if R[2]
         R[1]
