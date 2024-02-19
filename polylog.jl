@@ -12,6 +12,8 @@ import Base.eps
 import Base.BigFloat
 eps(::Type{Complex{T}}) where T <: AbstractFloat = eps(T)
 
+import Base.precision
+precision(::Type{Complex{T}}) where T <: AbstractFloat = precision(T)
 # Is there a better way to do this?  Something like how pi is defined?
 """
   zeta2(T::Type)
@@ -27,11 +29,12 @@ julia> zeta2(Complex{Float32})
 ```
 """
 function zeta2(T::Type)
-    if T == Float16 || T == Float32 || T == Float64 ||
-       T == Complex{Float16} || T == Complex{Float32} || T == Complex{Float64}
-        parse(T, "1.6449340668482264364724151666460")
+    if precision(T) <= 53
+        parse(T, "1.644934066848226436472415")
+    elseif precision(T) <= 256
+        parse(T, "1.6449340668482264364724151666460251892189499012067984377355582293700074704032008738332")
     else 
-        convert(BigFloat,pi)*(convert(BigFloat,pi)/6)
+        convert(T,pi)*(convert(T,pi)/convert(T,6))
     end
 end
 
