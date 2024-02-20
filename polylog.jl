@@ -57,6 +57,17 @@ function clog(x::Number)
     end
 end
 
+function KahanSum(T,a...)
+    sum = zero(T)
+    c = zero(T)
+    for x in a
+        y = x - c
+        t = sum + y
+        c = (t - sum) - y
+        sum = t
+    end
+    sum
+end
 
 # This function optionally uses a polylog2 function identity before
 # it calls polylog2_helper. The polylog2 function has functional 
