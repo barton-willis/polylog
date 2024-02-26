@@ -29,16 +29,20 @@ julia> zeta2(Complex{Float32})
 ```
 """
 function zeta2(T::Type)
-    if precision(T) <= 53
-        parse(T, "1.644934066848226436472415")
-    elseif precision(T) <= 256
-        parse(T, "1.6449340668482264364724151666460251892189499012067984377355582293700074704032008738332")
+    if T==Float64 || T==Complex{Float64}
+        reinterpret(Float64, 4610086943623153619)
+    elseif T==Float32 || T==Complex{Float32}
+        reinterpret(Float32, convert(Int32, 1070763315))
+    elseif T==Float16 || T==Complex{Float16}
+        reinterpret(Float16, convert(Int16, 16020))
     else 
         convert(T,pi)*(convert(T,pi)/convert(T,6))
     end
 end
 
 """
+A complex natural logarithm function.
+
   clog(x::Number)
 
 When x is in (0,infinity) return log(x); otherwise, convert x to 
@@ -54,6 +58,14 @@ function clog(x::Number)
         log(real(-x)) + convert(typeof(x),pi)*im
     else
         log(Complex(x))
+    end
+end
+
+function clog1p(x)
+    if iszero(imag(x)) && real(x) > 0
+        log1p(x)
+    else 
+        log1p(Complex(x))
     end
 end
 
@@ -122,14 +134,30 @@ function polylog2(x::Number)
     else #do x -> 1-x transformation
         q0 = 2 * ((one(T) - x) / (one(T) + x))
         f = polylog2_helper(q0, one(T) - x)
-        # I don't think changing clog(1-x) to log1p(-x) is a win?
-        zeta2(T) - (f[1] + clog(x) * clog(one(T) - x)), f[2]
+        # I've experimented with replacing clog(one(T) - x))
+        # with log1p(-x). It's not a clear win.
+        zeta2(T) - (f[1] + clog(x)*clog(one(T)-x)), f[2]
     end
     if R[2]
         R[1]
     else
+        # When the running error bound is too great, we should
+        # try again with a BigFloat with greater precision.
         error("Unable to evaluate(polylog2(", x, ")")
     end
+end
+
+"""
+    mapabs(x)
+When `x` is real, return abs(x); and when `x` is complex, return
+abs(real(x)) + abs(real(x))im.
+"""
+function mapabs(x::Complex) 
+    abs(real(x)) + im*abs(imag(x))
+end
+
+function mapabs(x::Real) 
+    abs(x)
 end
 
 # return value of polylog(2,x) and a boolean that indicates success or failure.
@@ -140,26 +168,30 @@ end
 # It's a fun game to attempt to find the fewest number of Int64 add and multiplies 
 # to compute (k+1)(k+2), (k+2)^2, and (k+3)*(k+4). Let's just let it be.
 
-# We could use muladd to evaluate the dotproduct p0q0+p1q1+p2q2, but I'm not sure 
+# We could use muladd to evaluate the dot product p0q0+p1q1+p2q2, but I'm not sure 
 # we win. Julia's fma function doesn't allow complex arguments, so I'm not sure we
-# gain any accuracy by using muladd
+# gain any accuracy by using muladd.
+
+# The value of he is a running error bound on the rounding error of h. For a 
+# description of the running error see _Accuracy and Stability of Numerical Algorithms_,
+# by Nickolas Highnam (SIAM, 2002, ISBN 0-89871-521-0). 
 
 function polylog2_helper(q0::Number, x::Number)
     T = typeof(x)
     #was q0 = x/(1-x/2)
     q1 = (-q0^2) / 4 # was -x^2/(4*(1-x/2)^2)
     q2 = (q0^3) / 9  # was x^3/(9*(1-x/2)^3)
-    h = q0 + (q1 + q2) # not sure of best order to sum.
+    #was h = q0 + (q1 + q2) # not sure of best order to sum.
+    h = KahanSum(T, q2,q1,q0) 
     N = 2^24 # magic number--it is a power of two for no particular reason
     k = zero(N)
     streak = zero(N)
-    cndR = abs(real(q0)) + abs(real(q1)) + abs(real(q2)) #real part of sum condition number.
-    cndI = abs(imag(q0)) + abs(imag(q1)) + abs(imag(q2)) #imaginary part of sum condition number.
     ks = zero(T) #Kahan summation corrector
     s0 = x / (x - 2)
     s1 = s0^2
     s2 = s0^3
     ε = eps(T)
+    he = zero(T) # upper limit for error in h
     while k < N && streak < 5 && !isnan(h) && !isinf(h)  #magic number 5
         #was q3 = (-(k+1)*(k+2)*q0*x^3+(k+2)^2*q1*(x-2)*x^2+(k+3)*(k+4)*q2*(x-2)^2*x)/((k+4)^2*(x-2)^3)
 
@@ -171,18 +203,20 @@ function polylog2_helper(q0::Number, x::Number)
         p0 = -(k+1)*(k+2)*s2
         p1 = (k+2)^2*s1
         p2 = (k+3)*(k+4)*s0
-        q3 = (p0 * q0 + (p1 * q1 + p2 * q2))/(k+4)^2 # not sure of best order to sum.
+        #was q3 = (p0 * q0 + (p1 * q1 + p2 * q2))/(k+4)^2 # not sure of best order to sum.
+        q3 = KahanSum(T, p1*q1, p2*q2, p0*q0)/(k+4)^2
         qq3 = q3 - ks #start Kahan summation
         t = h + qq3
         ks = (t - h) - qq3
         streak = if (h == t) || isapprox(h,t,atol=ε) streak + 1 else 0 end
         h = t #end Kahan summation	
-        cndR += abs(real(q3))
-        cndI += abs(imag(q3))
+        he +=  mapabs(h)
         (q0,q1,q2) = (q1,q2,q3)
         k += 1
     end
-    h, k < N && !isnan(h) && !isinf(h) && cndR < 16 && cndI < 16
+    #println("he = $he  h = $h")
+    println("k = $k")
+    h, k < N && !isnan(h) && !isinf(h) && real(he) < 256*(1 + abs(real(h))) && imag(he) < 256*(1 + abs(imag(h)))
 end
 
 function polylog2(x::Int64)
@@ -191,4 +225,43 @@ end
 
 function polylog2(x::Complex{Int64})
     polylog2(convert(Complex{Float64},x)) 
+end
+
+# This code is based on a method that has a better linear convergence rate than 
+# does polylog2_helper. This function is poorly tested!
+function polylog2X(x)
+    T = typeof(x)  
+    if isreal(x) 
+        α = -x/2
+        μ = α/(1+α) # linear convergence rate
+    else
+      s = sqrt((conj(x)-1)/(x-1))
+      α1 = s*x/(s-1)
+      α2 = s*x/(s+1)
+      println("α1 = ", abs(α1/(α1 + 1)), " α2 = ", abs(α2/(α2+1)))
+      α = if abs2(α1/(α1 +1)) < abs2(α2/(α2+1)) α1 else α2 end # not sure!
+      μ = α/(α+1) # linear convergence rate
+    end
+
+    ks = zero(T) #Kahan summation corrector
+    ε = eps(T)
+    q0 = x/(1+α)
+    q1 = (x*α+x^2/4)/(α+1)^2
+    q2 = (x*α^2+(x^2*α)/2+x^3/9)/(α+1)^3
+    k = 0
+    streak = 0
+    N = 2^12
+    h = q0 + q1 + q2
+    while k < N && streak < 5 && !isnan(h) && !isinf(h)
+      p0 = ((k+1)*(k+2)*α^2*(α+x))/((k+4)^2*(α+1)^3)
+      p1 = -((k+2)*α*(3*k*α+8*α+2*k*x+5*x))/((k+4)^2*(α+1)^2)
+      p2 = ((k+3)*(3*k*α+10*α+k*x+3*x))/((k+4)^2*(α+1))
+      k += 1
+      (q0,q1,q2) = (q1,q2, q0*p0 + q1*p1 +q2*p2)
+      t = h + q2
+      streak = if (h == t) || isapprox(h,t,atol=ε) streak + 1 else 0 end
+      h = t 
+    end
+    @show(k)
+    h, k < N && !isnan(h) && !isinf(h)
 end

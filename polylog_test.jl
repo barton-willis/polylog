@@ -35,25 +35,44 @@ function test_report(results)
 end
 
 # Test the identity http://dlmf.nist.gov/25.12.E3 .
-# This identity is valid off [1,infinity). For a input in [1,infinity),
-# return true.
+# This identity is valid off [1,infinity). For an input in 
+# [1,infinity), return zero; otherwise, return a ,modified
+# relative difference.
 function dlmf_25_12_3_E3(x)
-   if imag(x)==0 && real(x) >= 1
-      true
+   if iszero(imag(x)) && real(x) >= 1
+      d = 0
    else
-     rd(polylog2(x) + polylog2(x/(x-1)), -log(1-x)^2 / 2)
+     #rd(polylog2(x) + polylog2(x/(x-1)), -log(1-x)^2 / 2)
+     d = rd(polylog2(x) + polylog2(x/(x-1)), -log(1-x)^2 / 2)
+     if d > 6
+      println("x = $x")
+     end
    end
+   d
 end
 
-# Test dlmf_25_12_3_E3 inside the unit circle.
-function polylog2_test1(T::DataType,n::Int64)
+# Test dlmf_25_12_3_E3 inside and on the unit circle.
+function polylog2_test1(T::DataType,m::Int64,n::Int64)
+   results = Dict()
+   for i = 0 : m
+      for j = 0 : n
+         x = convert(T,(i/m) * cis(2*pi*j/n))
+         q = dlmf_25_12_3_E3(x)
+         results[q] = if haskey(results,q) results[q]+1 else 1 end
+   end
+   end
+   test_report(results)
+end
+
+# Test dlmf_25_12_3_E3 on the unit circle
+function polylog2_test2(T::DataType,n::Int64)
    results = Dict()
    while n > 0
-       x = convert(T,rand() * cis(2*pi*rand()))
+       x = convert(T, cis(2*pi*rand()))
        q = dlmf_25_12_3_E3(x)
        results[q] = if haskey(results,q) results[q]+1 else 1 end
        n -= 1
-   end
+      end
    test_report(results)
 end
 
@@ -72,27 +91,28 @@ end
 # http://dlmf.nist.gov/25.12.E5
 function dlmf_25_12_E5(T,z,m::Int64)
    if abs(z) < 1 && m > 0
-      s = zero(T)
+      s = [zero(T)]
       k = 0
       while k < m
          θ = (2*k*convert(T,pi))/m
-         s += polylog2(z*cis(θ))
+         push!(s, polylog2(z*cis(θ)))
          k += 1
       end
+      s = KahanSum(T, s...)
       rd(polylog2(z^m), m*s)
    else
       true
    end
 end
 
-function polylog2_test3(T::DataType,n::Int64)
+function polylog2_test3(T::DataType,n::Int64,m::Int64)
    results = Dict()
-   while n > 0
-       x = convert(T, rand()*cis(2*pi*rand()))
-       kk = rand(1:4)
-       q = dlmf_25_12_E5(T,x,kk)
-       results[q] = if haskey(results,q) results[q]+1 else 1 end
-       n -= 1
+   for i = 1 : n-1
+      for j = 0 : n
+         x = convert(T, (i/n)*cis(2*pi*j/n))
+         q = dlmf_25_12_E5(T,x,m)
+         results[q] = if haskey(results,q) results[q]+1 else 1 end
+      end
    end
    test_report(results)
 end
@@ -109,11 +129,10 @@ end
 
 function polylog2_test4(T::DataType, n::Int64)
    results = Dict()
-   while n > 0
-       x = convert(T,2*pi*rand())
-       q =  dlmf_25_12_E7(T,x)
+   pie = convert(T,pi)
+   for i = 0 : n-1
+       q = dlmf_25_12_E7(T,(2*pie*i)/n)
        results[q] = if haskey(results,q) results[q]+1 else 1 end
-       n -= 1
    end
    test_report(results)
 end
@@ -125,11 +144,13 @@ end
 
 function polylog2_test5(T::DataType,n::Int64)
    results = Dict()
-   while n > 0
-       x = convert(T, 2.0 * rand() * cis(2*pi*rand()))
-       q =  polylog2_id_1(x)
-       results[q] = if haskey(results,q) results[q]+1 else 1 end
-       n -= 1
+   pie = convert(T, pi)
+   for i = 1 : n
+      for j = 0 : n-1
+         x = ((convert(T,2)*i)/n) * cis((2*pie*j)/n)
+         q =  polylog2_id_1(x)
+         results[q] = if haskey(results,q) results[q]+1 else 1 end
+      end
    end
    test_report(results)
 end
