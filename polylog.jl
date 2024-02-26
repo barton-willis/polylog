@@ -235,9 +235,9 @@ function polylog2X(x)
         α = -x/2
         μ = α/(1+α) # linear convergence rate
     else
-      s = sqrt((conj(x)-1)/(x-1))
-      α1 = s*x/(s-1)
-      α2 = s*x/(s+1)
+      s = sqrt((x-1)/(conj(x)-1))
+      α1 = x/(s-1)
+      α2 = -x/(s+1)
       println("α1 = ", abs(α1/(α1 + 1)), " α2 = ", abs(α2/(α2+1)))
       α = if abs2(α1/(α1 +1)) < abs2(α2/(α2+1)) α1 else α2 end # not sure!
       μ = α/(α+1) # linear convergence rate
