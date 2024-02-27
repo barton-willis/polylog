@@ -1,3 +1,18 @@
 {
-    "julia.environmentPath": "C:\\Users\\willisb\\.julia\\environments\\v1.10"
+    "spellright.language": [
+        "en"
+    ],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "lisp",
+        "plaintext",
+        "mac",
+        "julia"
+    ],
+    "spellright.parserByClass": {
+        "mac": {
+            "parser": "code"
+        }
+    }
 }

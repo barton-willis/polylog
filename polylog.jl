@@ -242,7 +242,7 @@ function polylog2X(x)
       α = if abs2(α1/(α1 +1)) < abs2(α2/(α2+1)) α1 else α2 end # not sure!
       μ = α/(α+1) # linear convergence rate
     end
-
+    println(" μ = ", abs(μ))
     ks = zero(T) #Kahan summation corrector
     ε = eps(T)
     q0 = x/(1+α)
@@ -251,17 +251,23 @@ function polylog2X(x)
     k = 0
     streak = 0
     N = 2^12
+    ks = zero(T) #Kahan summation corrector
     h = q0 + q1 + q2
+    he = zero(T)
     while k < N && streak < 5 && !isnan(h) && !isinf(h)
       p0 = ((k+1)*(k+2)*α^2*(α+x))/((k+4)^2*(α+1)^3)
       p1 = -((k+2)*α*(3*k*α+8*α+2*k*x+5*x))/((k+4)^2*(α+1)^2)
       p2 = ((k+3)*(3*k*α+10*α+k*x+3*x))/((k+4)^2*(α+1))
       k += 1
-      (q0,q1,q2) = (q1,q2, q0*p0 + q1*p1 +q2*p2)
-      t = h + q2
+      q3 = KahanSum(T, p1*q1, p2*q2, p0*q0)
+      qq3 = q3 - ks #start Kahan summation
+      t = h + qq3
+      ks = (t - h) - qq3
       streak = if (h == t) || isapprox(h,t,atol=ε) streak + 1 else 0 end
-      h = t 
+      h = t #end Kahan summation	
+      he +=  mapabs(h)
+      (q0,q1,q2) = (q1,q2,q3)
     end
     @show(k)
-    h, k < N && !isnan(h) && !isinf(h)
+    h, k < N && !isnan(h) && !isinf(h) && real(he) < 256*(1 + abs(real(h))) && imag(he) < 256*(1 + abs(imag(h)))
 end
