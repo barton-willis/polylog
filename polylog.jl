@@ -266,7 +266,7 @@ function polylog2X(x)
       streak = if (h == t) || isapprox(h,t,atol=ε) streak + 1 else 0 end
       h = t #end Kahan summation	
       he +=  mapabs(h)
-      (q0,q1,q2) = (q1,q2,q3)
+      
     end
     @show(k)
     h, k < N && !isnan(h) && !isinf(h) && real(he) < 256*(1 + abs(real(h))) && imag(he) < 256*(1 + abs(imag(h)))
