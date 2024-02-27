@@ -227,9 +227,63 @@ function polylog2(x::Complex{Int64})
     polylog2(convert(Complex{Float64},x)) 
 end
 
+function convergence_rate(x::Number)
+    if isreal(x) 
+        α = -x/2
+        μ = α/(1+α) # linear convergence rate
+    else
+      s = sqrt((x-1)/(conj(x)-1))
+      α1 = x/(s-1)
+      α2 = -x/(s+1)
+      α = if abs2(α1/(α1 +1)) < abs2(α2/(α2+1)) α1 else α2 end
+      μ = α/(α+1) # linear convergence rate
+    end
+    abs2(μ)
+end
+
+function polylog2_alt(x::Number)
+    T = typeof(x)
+    μ0 = convergence_rate(x) # no transformation
+    μ1 = convergence_rate(1/x) # x -> 1/x transformation
+    μ2 = convergence_rate(1-x) # x -> 1-x transformation
+    μ3 = convergence_rate(x/(x-1)) # x -> x/(x-1) transformation
+    μmin = min(μ0, μ1, μ2, μ3)
+    
+    #println("convergence_rates = ", [μ0, μ1, μ2, μ3])
+    R = if x == 0
+        convert(T, 0), true
+    elseif x == 1
+        zeta2(T), true
+    elseif μmin == μ0 # no transformation
+        #println("x -> x")
+        polylog2X_helper(x)
+    elseif μmin == μ1 # do x -> 1/x transformation
+        #println("x -> 1/x")
+        f = polylog2X_helper(1/x)
+        -((f[1] + zeta2(T)) + clog(-x)^2 / 2), f[2]
+    elseif μmin == μ2 # do x -> 1-x transformation 
+        #println("x -> 1-x")
+        f = polylog2X_helper(one(T) - x)
+        # I've experimented with replacing clog(one(T) - x))
+        # with log1p(-x). It's not a clear win.
+        zeta2(T) - (f[1] + clog(x)*clog(one(T)-x)), f[2]
+    else # do x -> x -> x/(x-1) transformation
+        #println("x -> x/(1-x)")
+        f = polylog2X_helper(x/(x-1))
+        -f[1]  - clog(1-x)^2/2, f[2]  # http://dlmf.nist.gov/25.12.E3
+    end
+    if R[2]
+        R[1]
+    else
+        # When the running error bound is too great, we should
+        # try again with a BigFloat with greater precision.
+        error("Unable to evaluate(polylog2(", x, ")")
+    end
+end
+
 # This code is based on a method that has a better linear convergence rate than 
 # does polylog2_helper. This function is poorly tested!
-function polylog2X(x)
+function polylog2X_helper(x)
     T = typeof(x)  
     if isreal(x) 
         α = -x/2
@@ -238,27 +292,25 @@ function polylog2X(x)
       s = sqrt((x-1)/(conj(x)-1))
       α1 = x/(s-1)
       α2 = -x/(s+1)
-      println("α1 = ", abs(α1/(α1 + 1)), " α2 = ", abs(α2/(α2+1)))
       α = if abs2(α1/(α1 +1)) < abs2(α2/(α2+1)) α1 else α2 end # not sure!
       μ = α/(α+1) # linear convergence rate
     end
-    println(" μ = ", abs(μ))
+    #println(" μ = ", abs(μ))
     ks = zero(T) #Kahan summation corrector
     ε = eps(T)
     q0 = x/(1+α)
     q1 = (x*α+x^2/4)/(α+1)^2
     q2 = (x*α^2+(x^2*α)/2+x^3/9)/(α+1)^3
-    k = 0
-    streak = 0
     N = 2^12
+    k = zero(N)
+    streak = zero(N)
     ks = zero(T) #Kahan summation corrector
     h = q0 + q1 + q2
-    he = zero(T)
+    he = zero(T) # running error
     while k < N && streak < 5 && !isnan(h) && !isinf(h)
       p0 = ((k+1)*(k+2)*α^2*(α+x))/((k+4)^2*(α+1)^3)
       p1 = -((k+2)*α*(3*k*α+8*α+2*k*x+5*x))/((k+4)^2*(α+1)^2)
       p2 = ((k+3)*(3*k*α+10*α+k*x+3*x))/((k+4)^2*(α+1))
-      k += 1
       q3 = KahanSum(T, p1*q1, p2*q2, p0*q0)
       qq3 = q3 - ks #start Kahan summation
       t = h + qq3
@@ -266,8 +318,9 @@ function polylog2X(x)
       streak = if (h == t) || isapprox(h,t,atol=ε) streak + 1 else 0 end
       h = t #end Kahan summation	
       he +=  mapabs(h)
-      
+      (q0,q1,q2) = (q1,q2,q3)
+      k += 1
     end
-    @show(k)
+    #@show(k)
     h, k < N && !isnan(h) && !isinf(h) && real(he) < 256*(1 + abs(real(h))) && imag(he) < 256*(1 + abs(imag(h)))
 end
