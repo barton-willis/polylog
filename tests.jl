@@ -337,10 +337,10 @@ end
 println()
 myprintln("Test Dilogarithm reflection identity")
 @testset begin 
-    @test polylog2_test5(Float16,100) == true broken=true
-    @test polylog2_test5(Float32,100) == true broken=true
-    @test polylog2_test5(Float64,100) == true broken=true
-    @test polylog2_test5(BigFloat,100) == true broken=true
+    @test polylog2_test5(Float16,100) == true
+    @test polylog2_test5(Float32,100) == true
+    @test polylog2_test5(Float64,100) == true 
+    @test polylog2_test5(BigFloat,100) == true
 end
 
 using PolyLog
@@ -405,9 +405,9 @@ myprintln("Regression Tests")
   #  polylog2(0.6 + 0.0im) #3 
   @test  polylog2(0.6 + 0.0im)  == 0.7275863077163334 + 0.0im
   #  polylog2(Float16(0.273) - Float16(0.9004)im) #4 
-  @test polylog2(Float16(0.273) - Float16(0.9004)im) == Float16(0.05695) - Float16(0.9385)im broken=true
+  @test polylog2(Float16(0.273) - Float16(0.9004)im) ≈ Float16(0.05695) - Float16(0.9385)im atol=eps(Float16)
   #  polylog2(2.25 + 0.0im) =/= polylog2(2.25) #5 
-  @test polylog2(2.25 + 0.0im) == polylog2(2.25) broken=true
+  @test polylog2(2.25 + 0.0im) == polylog2(2.25)
   @test polylog2(0.6) == 0.7275863077163334
   @test polylog2(0.6 + 0.0im) == 0.7275863077163334 + 0.0im
 end

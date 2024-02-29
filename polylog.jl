@@ -113,7 +113,7 @@ julia> polylog2(BigFloat(0.125))
 julia> 0.1291398601099534056689353043446094486239
 ```
 """
-function polylog2(x::Number)
+function polylog2_old(x::Number)
     T = typeof(x)
     cnd = x -> if isapprox(2, x, atol=eps(T)) Inf else abs2(x / (2 - x)) end
     c0 = cnd(x)
@@ -228,7 +228,8 @@ function polylog2(x::Complex{Int64})
 end
 
 function convergence_rate(x::Number)
-    if isreal(x) 
+    if isreal(x)
+        x = real(x)
         α = -x/2
         μ = α/(1+α) # linear convergence rate
     else
@@ -238,7 +239,7 @@ function convergence_rate(x::Number)
       α = if abs2(α1/(α1 +1)) < abs2(α2/(α2+1)) α1 else α2 end
       μ = α/(α+1) # linear convergence rate
     end
-    abs2(μ)
+    if isnan(μ) Inf else abs2(μ) end
 end
 
 function polylog2(x::Number)
@@ -249,7 +250,6 @@ function polylog2(x::Number)
     μ3 = convergence_rate(x/(x-1)) # x -> x/(x-1) transformation
     μmin = min(μ0, μ1, μ2, μ3)
     
-    #println("convergence_rates = ", [μ0, μ1, μ2, μ3])
     R = if x == 0
         convert(T, 0), true
     elseif x == 1
@@ -258,7 +258,7 @@ function polylog2(x::Number)
         #println("x -> x")
         polylog2X_helper(x)
     elseif μmin == μ1 # do x -> 1/x transformation
-        #println("x -> 1/x")
+        # println("x -> 1/x")
         f = polylog2X_helper(1/x)
         -((f[1] + zeta2(T)) + clog(-x)^2 / 2), f[2]
     elseif μmin == μ2 # do x -> 1-x transformation 
@@ -285,7 +285,8 @@ end
 # does polylog2_helper. This function is poorly tested!
 function polylog2X_helper(x)
     T = typeof(x)  
-    if isreal(x) 
+    if isreal(x)
+        x = real(x)
         α = -x/2
         μ = α/(1+α) # linear convergence rate
     else
@@ -295,7 +296,6 @@ function polylog2X_helper(x)
       α = if abs2(α1/(α1 +1)) < abs2(α2/(α2+1)) α1 else α2 end # not sure!
       μ = α/(α+1) # linear convergence rate
     end
-    #println(" μ = ", abs(μ))
     ks = zero(T) #Kahan summation corrector
     ε = eps(T)
     q0 = x/(1+α)
@@ -305,7 +305,7 @@ function polylog2X_helper(x)
     k = zero(N)
     streak = zero(N)
     ks = zero(T) #Kahan summation corrector
-    h = q0 + q1 + q2
+    h = KahanSum(T,q0, q1, q2)
     he = zero(T) # running error
 
     #hoist some constants
@@ -315,7 +315,7 @@ function polylog2X_helper(x)
     K3 = 8*α+5*x
     K4 = α/(α+1)^2
 
-    K5 = (3*α + x)
+    K5 = 3*α + x
     K6 = 10*α+3*x
     K7 = one(T)+α
 
@@ -334,7 +334,7 @@ function polylog2X_helper(x)
       ks = (t - h) - qq3
       streak = if (h == t) || isapprox(h,t,atol=ε) streak + 1 else 0 end
       h = t #end Kahan summation	
-      he +=  mapabs(h)
+      he +=  mapabs(h) #update running error
       (q0,q1,q2) = (q1,q2,q3)
       k += 1
     end
