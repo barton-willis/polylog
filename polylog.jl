@@ -229,7 +229,6 @@ end
 
 function convergence_rate(x::Number)
     if isreal(x)
-        x = real(x)
         α = -x/2
         μ = α/(1+α) # linear convergence rate
     else
