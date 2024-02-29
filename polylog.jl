@@ -215,7 +215,7 @@ function polylog2_helper(q0::Number, x::Number)
         k += 1
     end
     #println("he = $he  h = $h")
-    println("k = $k")
+    #println("k = $k")
     h, k < N && !isnan(h) && !isinf(h) && real(he) < 256*(1 + abs(real(h))) && imag(he) < 256*(1 + abs(imag(h)))
 end
 
@@ -241,7 +241,7 @@ function convergence_rate(x::Number)
     abs2(μ)
 end
 
-function polylog2_alt(x::Number)
+function polylog2(x::Number)
     T = typeof(x)
     μ0 = convergence_rate(x) # no transformation
     μ1 = convergence_rate(1/x) # x -> 1/x transformation
@@ -307,11 +307,28 @@ function polylog2X_helper(x)
     ks = zero(T) #Kahan summation corrector
     h = q0 + q1 + q2
     he = zero(T) # running error
+
+    #hoist some constants
+    K1 = α^2*(α+x)/(α+1)^3
+
+    K2 = 3*α+2*x
+    K3 = 8*α+5*x
+    K4 = α/(α+1)^2
+
+    K5 = (3*α + x)
+    K6 = 10*α+3*x
+    K7 = one(T)+α
+
     while k < N && streak < 5 && !isnan(h) && !isinf(h)
-      p0 = ((k+1)*(k+2)*α^2*(α+x))/((k+4)^2*(α+1)^3)
-      p1 = -((k+2)*α*(3*k*α+8*α+2*k*x+5*x))/((k+4)^2*(α+1)^2)
-      p2 = ((k+3)*(3*k*α+10*α+k*x+3*x))/((k+4)^2*(α+1))
-      q3 = KahanSum(T, p1*q1, p2*q2, p0*q0)
+      #p0 = ((k+1)*(k+2)*α^2*(α+x))/((k+4)^2*(α+1)^3)
+      #p1 = -((k+2)*α*(3*k*α+8*α+2*k*x+5*x))/((k+4)^2*(α+1)^2)
+      #p2 = ((k+3)*(3*k*α+10*α+k*x+3*x))/((k+4)^2*(α+1))
+
+      p0 = (k+1)*(k+2)*K1
+      p1 = -(k+2)*(K2*k + K3)*K4
+      p2 = (k+3)*(K5*k + K6)/K7
+      
+      q3 = KahanSum(T, p1*q1, p2*q2, p0*q0)/(k+4)^2
       qq3 = q3 - ks #start Kahan summation
       t = h + qq3
       ks = (t - h) - qq3
