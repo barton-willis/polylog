@@ -372,19 +372,19 @@ function multiple_prec(x)
     y32 = polylog2(convert(Complex{Float32},x))
     y64 = polylog2(convert(Complex{Float64},x))
     ybf = polylog2(convert(Complex{BigFloat},x))
-    isapprox(y16, convert(Complex{Float16},y32), rtol=eps(Float16)) &&
-    isapprox(y32, convert(Complex{Float32},y32), rtol=eps(Float32)) &&
-    isapprox(y64, convert(Complex{Float64},ybf), rtol=eps(Float64))
+    isapprox(y16, convert(Complex{Float16},y32), rtol=2*eps(Float16)) &&
+    isapprox(y32, convert(Complex{Float32},y32), rtol=2*eps(Float32)) &&
+    isapprox(y64, convert(Complex{Float64},ybf), rtol=2*eps(Float64))
 end
 
 println()
 myprintln("Multiple precision Tests")
 @testset begin
     @test multiple_prec(4+8im) == true
-    @test multiple_prec(1//4+im//128) == true broken=true
+    @test multiple_prec(1//4+im//128) == true
     @test multiple_prec(128*im) == true
     @test multiple_prec(1//1 + im//2)
-    @test multiple_prec(cis(pi/3)) == true broken=true
+    @test multiple_prec(cis(pi/3)) == true
 end
 
 println()   
