@@ -248,7 +248,6 @@ function polylog2(x::Number)
     μ2 = convergence_rate(1-x) # x -> 1-x transformation
     μ3 = convergence_rate(x/(x-1)) # x -> x/(x-1) transformation
     μmin = min(μ0, μ1, μ2, μ3)
-    
     R = if x == 0
         convert(T, 0), true
     elseif x == 1
@@ -300,8 +299,8 @@ function polylog2X_helper(x)
     ks = zero(T) #Kahan summation corrector
     ε = eps(T)
     q0 = x/(1+α)
-    q1 = (x*α+x^2/4)/(α+1)^2
-    q2 = (x*α^2+(x^2*α)/2+x^3/9)/(α+1)^3
+    q1 = x*(α+x/4)/(one(T)+α*(α+2)) #was: (x*α+x^2/4)/(α+1)^2 
+    q2 = x*(α^2 + x*(α/2 + x/9))/((α+1)^3) #was: (x*α^2+(x^2*α)/2+x^3/9)/(α+1)^3
     N = 2^12
     k = zero(N)
     streak = zero(N)
