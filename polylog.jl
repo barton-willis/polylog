@@ -259,13 +259,15 @@ function polylog2(x::Number)
     elseif μmin == μ1 # do x -> 1/x transformation
         # println("x -> 1/x")
         f = polylog2X_helper(1/x)
-        -((f[1] + zeta2(T)) + clog(-x)^2 / 2), f[2]
+        #-((f[1] + zeta2(T)) + clog(-x)^2 / 2), f[2]
+        -KahanSum(T, f[1], zeta2(T), clog(-x)^2 / 2), f[2]
     elseif μmin == μ2 # do x -> 1-x transformation 
         #println("x -> 1-x")
         f = polylog2X_helper(one(T) - x)
         # I've experimented with replacing clog(one(T) - x))
         # with log1p(-x). It's not a clear win.
-        zeta2(T) - (f[1] + clog(x)*clog(one(T)-x)), f[2]
+        #zeta2(T) - (f[1] + clog(x)*clog(one(T)-x)), f[2]
+        KahanSum(T, zeta2(T), -f[1], -clog(x)*clog(one(T)-x)), f[2]
     else # do x -> x -> x/(x-1) transformation
         #println("x -> x/(1-x)")
         f = polylog2X_helper(x/(x-1))
@@ -274,7 +276,7 @@ function polylog2(x::Number)
     if R[2]
         R[1]
     else
-        # When the running error bound is too great, we should
+        # When the running error bound is too large, we should
         # try again with a BigFloat with greater precision.
         error("Unable to evaluate(polylog2(", x, ")")
     end
