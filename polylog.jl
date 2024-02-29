@@ -315,10 +315,14 @@ function polylog2X_helper(x)
     K2 = 3*α+2*x
     K3 = 8*α+5*x
     K4 = α/(α+1)^2
+    K2 *= K4
+    K3 *= K4
 
     K5 = 3*α + x
     K6 = 10*α+3*x
     K7 = one(T)+α
+    K5 /= K7
+    K6 /= K7
 
     while k < N && streak < 5 && !isnan(h) && !isinf(h)
       #p0 = ((k+1)*(k+2)*α^2*(α+x))/((k+4)^2*(α+1)^3)
@@ -326,8 +330,8 @@ function polylog2X_helper(x)
       #p2 = ((k+3)*(3*k*α+10*α+k*x+3*x))/((k+4)^2*(α+1))
 
       p0 = (k+1)*(k+2)*K1
-      p1 = -(k+2)*(K2*k + K3)*K4
-      p2 = (k+3)*(K5*k + K6)/K7
+      p1 = -(k+2)*(K2*k + K3)
+      p2 = (k+3)*(K5*k + K6)
       
       q3 = KahanSum(T, p1*q1, p2*q2, p0*q0)/(k+4)^2
       qq3 = q3 - ks #start Kahan summation
