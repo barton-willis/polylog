@@ -343,5 +343,7 @@ function polylog2X_helper(x)
       k += 1
     end
     #@show(k)
+    #@show(he*eps(T))
+    #@show(h)
     h, k < N && !isnan(h) && !isinf(h) && real(he) < 256*(1 + abs(real(h))) && imag(he) < 256*(1 + abs(imag(h)))
 end
