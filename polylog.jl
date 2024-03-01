@@ -113,13 +113,14 @@ julia> polylog2(BigFloat(0.125))
 julia> 0.1291398601099534056689353043446094486239
 ```
 """
-function polylog2_old(x::Number)
+function polylog2(x::Number)
     T = typeof(x)
     cnd = x -> if isapprox(2, x, atol=eps(T)) Inf else abs2(x / (2 - x)) end
     c0 = cnd(x)
     c1 = if isapprox(0, x, atol=eps(T)) Inf else cnd(inv(x)) end
     c2 = cnd(1 - x)
     cmin = min(c0, c1, c2)
+
     R = if x == 0
         convert(T, 0), true
     elseif x == 1
@@ -130,13 +131,15 @@ function polylog2_old(x::Number)
     elseif cmin == c1 #do x -> 1/x transformation
         q0 = inv(x - one(T)/2)
         f = polylog2_helper(q0, inv(x))
-        -((f[1] + zeta2(T)) + clog(-x)^2 / 2), f[2]
+        #was -((f[1] + zeta2(T)) + clog(-x)^2 / 2), f[2]
+        -KahanSum(T, zeta2(T), f[1], clog(-x)^2/2), f[2]
     else #do x -> 1-x transformation
         q0 = 2 * ((one(T) - x) / (one(T) + x))
         f = polylog2_helper(q0, one(T) - x)
         # I've experimented with replacing clog(one(T) - x))
         # with log1p(-x). It's not a clear win.
-        zeta2(T) - (f[1] + clog(x)*clog(one(T)-x)), f[2]
+        #was  zeta2(T) - (f[1] + clog(x)*log1p(one(T)-x)), f[2]
+        KahanSum(T, zeta2(T), -f[1], -clog(x)*clog(one(T)-x)), f[2]        
     end
     if R[2]
         R[1]
@@ -200,9 +203,9 @@ function polylog2_helper(q0::Number, x::Number)
 
         # It's fun to attempt to compute p0, p1, p2, and q3 with the least amount of
         # arithmetic. But the speedup is small, and the impact on accuracy is questionable.
-        p0 = -(k+1)*(k+2)*s2
+        p0 = -((k+1)*(k+2))*s2
         p1 = (k+2)^2*s1
-        p2 = (k+3)*(k+4)*s0
+        p2 = ((k+3)*(k+4))*s0
         #was q3 = (p0 * q0 + (p1 * q1 + p2 * q2))/(k+4)^2 # not sure of best order to sum.
         q3 = KahanSum(T, p1*q1, p2*q2, p0*q0)/(k+4)^2
         qq3 = q3 - ks #start Kahan summation
@@ -214,8 +217,6 @@ function polylog2_helper(q0::Number, x::Number)
         (q0,q1,q2) = (q1,q2,q3)
         k += 1
     end
-    #println("he = $he  h = $h")
-    #println("k = $k")
     h, k < N && !isnan(h) && !isinf(h) && real(he) < 256*(1 + abs(real(h))) && imag(he) < 256*(1 + abs(imag(h)))
 end
 
@@ -241,7 +242,7 @@ function convergence_rate(x::Number)
     if isnan(μ) Inf else abs2(μ) end
 end
 
-function polylog2(x::Number)
+function polylog2X(x::Number)
     T = typeof(x)
     μ0 = convergence_rate(x) # no transformation
     μ1 = convergence_rate(1/x) # x -> 1/x transformation
@@ -282,7 +283,7 @@ function polylog2(x::Number)
 end
 
 # This code is based on a method that has a better linear convergence rate than 
-# does polylog2_helper. This function is poorly tested!
+# does polylog2_helper.
 function polylog2X_helper(x)
     T = typeof(x)  
     if isreal(x)
@@ -296,6 +297,7 @@ function polylog2X_helper(x)
       α = if abs2(α1/(α1 +1)) < abs2(α2/(α2+1)) α1 else α2 end # not sure!
       μ = α/(α+1) # linear convergence rate
     end
+    #println("|μ| = ", abs(μ))
     ks = zero(T) #Kahan summation corrector
     ε = eps(T)
     q0 = x/(1+α)
@@ -328,7 +330,7 @@ function polylog2X_helper(x)
       #p1 = -((k+2)*α*(3*k*α+8*α+2*k*x+5*x))/((k+4)^2*(α+1)^2)
       #p2 = ((k+3)*(3*k*α+10*α+k*x+3*x))/((k+4)^2*(α+1))
 
-      p0 = (k+1)*(k+2)*K1
+      p0 = ((k+1)*(k+2))*K1
       p1 = -(k+2)*(K2*k + K3)
       p2 = (k+3)*(K5*k + K6)
       
