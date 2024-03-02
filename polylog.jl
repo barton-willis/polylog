@@ -177,7 +177,7 @@ end
 
 # The value of he is a running error bound on the rounding error of h. For a 
 # description of the running error see _Accuracy and Stability of Numerical Algorithms_,
-# by Nickolas Highnam (SIAM, 2002, ISBN 0-89871-521-0). 
+# by Nicholas Higham (SIAM, 2002, ISBN 0-89871-521-0). 
 
 function polylog2_helper(q0::Number, x::Number)
     T = typeof(x)
