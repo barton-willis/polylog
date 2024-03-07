@@ -185,12 +185,12 @@ function polylog2_helper(q0::Number, x::Number)
     q1 = (-q0^2) / 4 # was -x^2/(4*(1-x/2)^2)
     q2 = (q0^3) / 9  # was x^3/(9*(1-x/2)^3)
     #was h = q0 + (q1 + q2) # not sure of best order to sum.
-    h = KahanSum(T, q2,q1,q0) 
+    h = KahanSum(T, q2,q1,q0) #q0 - q0^2/4 + q0^3/9
     N = 2^24 # magic number--it is a power of two for no particular reason
     k = zero(N)
     streak = zero(N)
     ks = zero(T) #Kahan summation corrector
-    s0 = x / (x - 2)
+    s0 = x/(x - 2)
     s1 = s0^2
     s2 = s0^3
     ε = eps(T)
@@ -226,6 +226,16 @@ end
 
 function polylog2(x::Complex{Int64})
     polylog2(convert(Complex{Float64},x)) 
+end
+
+# polylog2(pi) = polylog2(convert(Float64,pi))
+function polylog2(x::Irrational)     
+    polylog2(convert(Float64,x))
+end
+
+# polylog2(im) = polylog2(convert(Complex{Float64},im))
+function polylog2(x::Complex{Bool})     
+    polylog2(convert(Complex{Float64},x))
 end
 
 function convergence_rate(x::Number)
@@ -283,7 +293,8 @@ function polylog2X(x::Number)
 end
 
 # This code is based on a method that has a better linear convergence rate than 
-# does polylog2_helper.
+# does polylog2_helper. Most experiments show that this code is _slower_ than
+# polylog2 and no more accurate.
 function polylog2X_helper(x)
     T = typeof(x)  
     if isreal(x)

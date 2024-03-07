@@ -410,4 +410,6 @@ myprintln("Regression Tests")
   @test polylog2(2.25 + 0.0im) == polylog2(2.25)
   @test polylog2(0.6) == 0.7275863077163334
   @test polylog2(0.6 + 0.0im) == 0.7275863077163334 + 0.0im
+  @test polylog2(im) == -0.20561675835602827 + 0.915965594177219im
+  @test polylog2(pi) == 2.2866310010902082 - 3.596274999729158im
 end
