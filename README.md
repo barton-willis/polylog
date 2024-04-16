@@ -7,7 +7,7 @@
 The dilogarithm function has applications to statistical mechanics, Feynman integrals,
 and algebraic number theory, to name a few.
 
- The method is based on a series representation from the article "The binomial transform of p-recursive sequences and the dilogarithm function," [(arXiv)][def] by Stephanie Harshbarger and Barton Willis. This article was published by _Applications and Applied Mathematics_, in **vol.** 15, **Issue** 2 (December 2020), pp. 1025–1031.
+ The method is based on a series representation from the article  “The binomial transform of p-recursive sequences and the dilogarithm function,” [(arXiv)][def] by Stephanie Harshbarger and Barton Willis. This article was published by _Applications and Applied Mathematics_, in **vol.** 15, **Issue** 2 (December 2020), pp. 1025–1031.
 
 ## Features
 
