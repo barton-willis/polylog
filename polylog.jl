@@ -16,13 +16,13 @@ import Base.precision
 precision(::Type{Complex{T}}) where T <: AbstractFloat = precision(T)
 # Is there a better way to do this?  Something like how pi is defined?
 
-setprecision(BigFloat, 256) do
+PI_SQUARED_OVER_6_BIG256 = setprecision(BigFloat, 256) do
     # Within this block, BigFloat calculations will have a precision of 256 bits
-    PI_SQUARED_OVER_6_BIG = BigFloat(π)*(BigFloat(π)/BigFloat(6))
+    BigFloat(π)*(BigFloat(π)/BigFloat(6))
 end
-const PI_SQUARED_OVER_6_FLOAT64 = convert(Float64, PI_SQUARED_OVER_6_BIG)
-const PI_SQUARED_OVER_6_FLOAT32 = convert(Float32, PI_SQUARED_OVER_6_BIG)
-const PI_SQUARED_OVER_6_FLOAT16 = convert(Float16, PI_SQUARED_OVER_6_BIG)
+const PI_SQUARED_OVER_6_FLOAT64 = convert(Float64, PI_SQUARED_OVER_6_BIG256)
+const PI_SQUARED_OVER_6_FLOAT32 = convert(Float32, PI_SQUARED_OVER_6_BIG256)
+const PI_SQUARED_OVER_6_FLOAT16 = convert(Float16, PI_SQUARED_OVER_6_BIG256)
 
 """
   zeta2(T::Type)
@@ -78,7 +78,7 @@ function clog(x::Number)
     if iszero(imag(x)) && real(x) > 0
         log(real(x))
     elseif iszero(imag(x))
-        log(real(-x)) + convert(typeof(x),pi)*im
+        log(real(-x)) + one(x)*pi*im
     else
         log(Complex(x))
     end
