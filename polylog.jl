@@ -228,7 +228,12 @@ end
 # The value of he is a running error bound on the rounding error of h. For a 
 # description of the running error see _Accuracy and Stability of Numerical Algorithms_,
 # by Nicholas Higham (SIAM, 2002, ISBN 0-89871-521-0). 
+"""
+    polylog2_helper(q0::Number, x::Number)
 
+    Helper function for computing the polylogarithm function Li_2(x). This is
+    _not_ a user-level function.
+"""
 function polylog2_helper(q0::Number, x::Number)
     T = typeof(x)
     #was q0 = x/(1-x/2)
