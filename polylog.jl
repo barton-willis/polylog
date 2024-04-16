@@ -69,12 +69,39 @@ function clog1p(x)
     end
 end
 
-function KahanSum(T,a...)
-    sum = zero(T)
-    c = zero(T)
+"""
+    KahanSum(a...)
+
+Return the Kahan summation of a sequence of numbers `a::Vararg`. 
+
+For more details about this method, see [Wikipedia](https://en.wikipedia.org/wiki/Kahan_summation_algorithm).
+
+# Arguments
+- `a::Vararg` Sequence of numbers to be summed.
+
+# Returns
+- The sum of the input numbers computed using Kahan summation. The return type is
+  `eltype(a)'
+
+# Error
+Throw an `ArgumentError` when the argument `a` is empty.
+
+# Example
+```julia
+KahanSum(1.0, 2.0, 3.0)
+6.0
+
+KahanSum(2//3, 6.7, BigFloat(5.6))
+12.9666666666666667850904559600166976451873779296875
+"""
+function KahanSum(a::Vararg)
+    !isempty(a) || throw(ArgumentError("The function KahanSum requires at least one argument"))
+    T = eltype(a)
+    sum::T = zero(T)
+    c::T = zero(T)
     for x in a
-        y = x - c
-        t = sum + y
+        y::T = x - c
+        t::T = sum + y
         c = (t - sum) - y
         sum = t
     end
@@ -132,14 +159,14 @@ function polylog2(x::Number)
         q0 = inv(x - one(T)/2)
         f = polylog2_helper(q0, inv(x))
         #was -((f[1] + zeta2(T)) + clog(-x)^2 / 2), f[2]
-        -KahanSum(T, zeta2(T), f[1], clog(-x)^2/2), f[2]
+        -KahanSum(zeta2(T), f[1], clog(-x)^2/2), f[2]
     else #do x -> 1-x transformation
         q0 = 2 * ((one(T) - x) / (one(T) + x))
         f = polylog2_helper(q0, one(T) - x)
         # I've experimented with replacing clog(one(T) - x))
         # with log1p(-x). It's not a clear win.
         #was  zeta2(T) - (f[1] + clog(x)*log1p(one(T)-x)), f[2]
-        KahanSum(T, zeta2(T), -f[1], -clog(x)*clog(one(T)-x)), f[2]        
+        KahanSum(zeta2(T), -f[1], -clog(x)*clog(one(T)-x)), f[2]        
     end
     if R[2]
         R[1]
@@ -185,7 +212,7 @@ function polylog2_helper(q0::Number, x::Number)
     q1 = (-q0^2) / 4 # was -x^2/(4*(1-x/2)^2)
     q2 = (q0^3) / 9  # was x^3/(9*(1-x/2)^3)
     #was h = q0 + (q1 + q2) # not sure of best order to sum.
-    h = KahanSum(T, q2,q1,q0) #q0 - q0^2/4 + q0^3/9
+    h = KahanSum(q2,q1,q0) #q0 - q0^2/4 + q0^3/9
     N = 2^24 # magic number--it is a power of two for no particular reason
     k = zero(N)
     streak = zero(N)
@@ -207,7 +234,7 @@ function polylog2_helper(q0::Number, x::Number)
         p1 = (k+2)^2*s1
         p2 = ((k+3)*(k+4))*s0
         #was q3 = (p0 * q0 + (p1 * q1 + p2 * q2))/(k+4)^2 # not sure of best order to sum.
-        q3 = KahanSum(T, p1*q1, p2*q2, p0*q0)/(k+4)^2
+        q3 = KahanSum(p1*q1, p2*q2, p0*q0)/(k+4)^2
         qq3 = q3 - ks #start Kahan summation
         t = h + qq3
         ks = (t - h) - qq3
@@ -270,14 +297,14 @@ function polylog2X(x::Number)
         # println("x -> 1/x")
         f = polylog2X_helper(1/x)
         #-((f[1] + zeta2(T)) + clog(-x)^2 / 2), f[2]
-        -KahanSum(T, f[1], zeta2(T), clog(-x)^2 / 2), f[2]
+        -KahanSum(f[1], zeta2(T), clog(-x)^2 / 2), f[2]
     elseif μmin == μ2 # do x -> 1-x transformation 
         #println("x -> 1-x")
         f = polylog2X_helper(one(T) - x)
         # I've experimented with replacing clog(one(T) - x))
         # with log1p(-x). It's not a clear win.
         #zeta2(T) - (f[1] + clog(x)*clog(one(T)-x)), f[2]
-        KahanSum(T, zeta2(T), -f[1], -clog(x)*clog(one(T)-x)), f[2]
+        KahanSum(zeta2(T), -f[1], -clog(x)*clog(one(T)-x)), f[2]
     else # do x -> x -> x/(x-1) transformation
         #println("x -> x/(1-x)")
         f = polylog2X_helper(x/(x-1))
@@ -318,7 +345,7 @@ function polylog2X_helper(x)
     k = zero(N)
     streak = zero(N)
     ks = zero(T) #Kahan summation corrector
-    h = KahanSum(T,q0, q1, q2)
+    h = KahanSum(q0, q1, q2)
     he = zero(T) # running error
 
     #hoist some constants
@@ -345,7 +372,7 @@ function polylog2X_helper(x)
       p1 = -(k+2)*(K2*k + K3)
       p2 = (k+3)*(K5*k + K6)
       
-      q3 = KahanSum(T, p1*q1, p2*q2, p0*q0)/(k+4)^2
+      q3 = KahanSum(p1*q1, p2*q2, p0*q0)/(k+4)^2
       qq3 = q3 - ks #start Kahan summation
       t = h + qq3
       ks = (t - h) - qq3
