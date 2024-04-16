@@ -15,10 +15,19 @@ eps(::Type{Complex{T}}) where T <: AbstractFloat = eps(T)
 import Base.precision
 precision(::Type{Complex{T}}) where T <: AbstractFloat = precision(T)
 # Is there a better way to do this?  Something like how pi is defined?
+
+setprecision(BigFloat, 256) do
+    # Within this block, BigFloat calculations will have a precision of 256 bits
+    PI_SQUARED_OVER_6_BIG = BigFloat(π)*(BigFloat(π)/BigFloat(6))
+end
+const PI_SQUARED_OVER_6_FLOAT64 = convert(Float64, PI_SQUARED_OVER_6_BIG)
+const PI_SQUARED_OVER_6_FLOAT32 = convert(Float32, PI_SQUARED_OVER_6_BIG)
+const PI_SQUARED_OVER_6_FLOAT16 = convert(Float16, PI_SQUARED_OVER_6_BIG)
+
 """
   zeta2(T::Type)
 
-Return the value of `pi^2/6` rounded to the type `T`
+Return the value of `π^2/6` rounded to the type `T`
 
 Examples:
 ```
@@ -26,16 +35,30 @@ julia> zeta2(Float64)
 1.6449340668482264
 julia> zeta2(Complex{Float32})
 1.644934f0 + 0.0f0im
+julia> zeta2(Complex{Float16})
+Float16(1.645) + Float16(0.0)im
 ```
 """
 function zeta2(T::Type)
-    if T==Float64 || T==Complex{Float64}
-        reinterpret(Float64, 4610086943623153619)
-    elseif T==Float32 || T==Complex{Float32}
-        reinterpret(Float32, convert(Int32, 1070763315))
-    elseif T==Float16 || T==Complex{Float16}
-        reinterpret(Float16, convert(Int16, 16020))
-    else 
+   if T == Float64 
+        PI_SQUARED_OVER_6_FLOAT64
+
+   elseif T == Complex{Float64}
+       Complex(PI_SQUARED_OVER_6_FLOAT64)
+
+    elseif T == Float32 
+         PI_SQUARED_OVER_6_FLOAT32
+
+    elseif T == Complex{Float32}
+        Complex(PI_SQUARED_OVER_6_FLOAT32)
+
+    elseif T == Float16 
+        PI_SQUARED_OVER_6_FLOAT16
+
+    elseif T == Complex{Float16}
+        Complex(PI_SQUARED_OVER_6_FLOAT16)
+
+    else
         convert(T,pi)*(convert(T,pi)/convert(T,6))
     end
 end
