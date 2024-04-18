@@ -136,7 +136,7 @@ end
 """
     polylog2(x::Number)
 
-Compute the numeric value of the dilogarithm. For a definition of this function,
+Compute the numeric value of the dilogarithm. For a definition of the dilogarithm,
 see http://dlmf.nist.gov/25.12.E1. 
 
 Examples:
