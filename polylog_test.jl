@@ -67,23 +67,10 @@ end
 # Test dlmf_25_12_3_E3 on the unit circle
 function polylog2_test2(T::DataType,n::Int64)
    results = Dict()
-   while n > 0
-       x = convert(T, cis(2*pi*rand()))
+   for j = 0 : n-1
+       x = convert(T, cis(2*pi*j/n))
        q = dlmf_25_12_3_E3(x)
        results[q] = if haskey(results,q) results[q]+1 else 1 end
-       n -= 1
-      end
-   test_report(results)
-end
-
-# Test dlmf_25_12_3_E3 on the unit circle
-function polylog2_test2(T::DataType,n::Int64)
-   results = Dict()
-   while n > 0
-       x = convert(T, cis(2*pi*rand()))
-       q = dlmf_25_12_3_E3(x)
-       results[q] = if haskey(results,q) results[q]+1 else 1 end
-       n -= 1
    end
    test_report(results)
 end
