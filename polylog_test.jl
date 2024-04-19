@@ -44,10 +44,7 @@ function dlmf_25_12_3_E3(x)
    else
      #rd(polylog2(x) + polylog2(x/(x-1)), -log(1-x)^2 / 2)
      d = rd(polylog2(x) + polylog2(x/(x-1)), -log(1-x)^2 / 2)
-     if d > 6
-      println("x = $x")
-     end
-   end
+    end
    d
 end
 
