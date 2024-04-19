@@ -82,7 +82,7 @@ function dlmf_25_12_E5(T,z,m::Int64)
          push!(s, polylog2(z*cis(θ)))
          k += 1
       end
-      s = KahanSum(T, s...)
+      s = KahanSum(s...)
       rd(polylog2(z^m), m*s)
    else
       true
