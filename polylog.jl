@@ -74,16 +74,27 @@ function clog(x::Number)
     end
 end
 
-#=
-# This function is unused. 
-function clog1p(x)
-    if iszero(imag(x)) && real(x) > 0
+"""
+    clog1p(x)
+
+Return log(1+x). Specifically, when x is in (-1,∞), return log1p(x); otherwise, 
+return log(1+x).
+"""
+function clog1p(x::T) where T<:Real
+    if x > -1
         log1p(x)
-    else 
-        log1p(Complex(x))
+    else
+        log(one(x) + Complex(x))
     end
 end
-=#
+
+function clog1p(x::Complex{T}) where T<:Real
+    if iszero(imag(x)) && real(x) > -1
+        log1p(x)
+    else 
+        log(one(x) + x)
+    end
+end
 
 """
     KahanSum(a...)
@@ -178,10 +189,7 @@ function polylog2(x::Number)
     else #do x -> 1-x transformation
         q0 = 2 * ((one(T) - x) / (one(T) + x))
         f = polylog2_helper(q0, one(T) - x)
-        # I've experimented with replacing clog(one(T) - x))
-        # with log1p(-x). It's not a clear win.
-        #was  zeta2(T) - (f[1] + clog(x)*log1p(one(T)-x)), f[2]
-        KahanSum(zeta2(T), -f[1], -clog(x)*clog(one(T)-x)), f[2]        
+        KahanSum(zeta2(T), -f[1], -clog(x)*clog1p(-x)), f[2]       
     end
     if R[2]
         R[1]
