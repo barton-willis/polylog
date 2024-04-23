@@ -14,7 +14,7 @@ and algebraic number theory, to name a few.
 - The same code is used for real and complex `binary16`, `binary32`, `binary64`, and `bigfloat` numbers.
 
 - The method uses a recursively defined sequence that converges linearly on 
-$\{z \in \{\mathbf{C} \mid \mathrm{Re}(z) \leq 1 \}$ to $\mathrm{Li}_2(z)$. The recursion for the sequence $\Phi$ is stable, meaning that asymptotically, all solutions to the recursion are subdominant to the solution that converges to the dilogarithm function. To gain a better convergence rate, this method uses various dilogarithm functional relations.
+$z \in \{\mathbf{C} \mid \mathrm{Re}(z) \leq 1 \}$ to $\mathrm{Li}_2(z)$. The recursion for the sequence $\Phi$ is stable, meaning that asymptotically, all solutions to the recursion are subdominant to the solution that converges to the dilogarithm function. To gain a better convergence rate, this method uses various dilogarithm functional relations.
 
 - Additionally, there is another method based on a sequence that converges for $\mathbf{C} \setminus [1,\infty)$ to $\mathrm{Li}_2(z)$. Asymptotically, the sequence $\Phi$ satisfies $\Phi_k \sim L + a \mu^k$, for $k \to \infty$, where the magnitude of $\mu$ is bounded by $1/\sqrt{3} \approx 0.577$ and $a \in \mathbf{C}$. Although this series has a somewhat better convergence rate than the series that converges on $\{z \in \mathbf{C} \mid \mathrm{Re}(z) \leq 1 \}$, this method is generally somewhat slower and the code is less tested.
 
