@@ -7,6 +7,10 @@
 # dilogarithm function," by Stephanie Harshbarger and Barton Willis.
 # https://arxiv.org/pdf/1910.06928.pdf
 
+module polylog
+
+export polylog2, clog, KahanSum
+
 # Extend eps to complex numbers.
 import Base.eps
 import Base.BigFloat
@@ -25,7 +29,7 @@ const PI_SQUARED_OVER_6_FLOAT32 = convert(Float32, PI_SQUARED_OVER_6_BIG256)
 const PI_SQUARED_OVER_6_FLOAT16 = convert(Float16, PI_SQUARED_OVER_6_BIG256)
 
 # A dictionary of values of π^2/6. 
-const ZETA2_DICTIONARY = Dict{Type, Any}(
+const ZETA2_DICTIONARY = Dict(
     Float64 => PI_SQUARED_OVER_6_FLOAT64,
     Complex{Float64} => Complex(PI_SQUARED_OVER_6_FLOAT64),
     Float32 => PI_SQUARED_OVER_6_FLOAT32,
@@ -415,3 +419,5 @@ function polylog2X_helper(x)
     #@show(h)
     h, k < N && !isnan(h) && !isinf(h) && real(he) < 256*(1 + abs(real(h))) && imag(he) < 256*(1 + abs(imag(h)))
 end
+
+end #polylog
