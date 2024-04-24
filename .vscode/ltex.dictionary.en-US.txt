@@ -1,3 +1,0 @@
-dilogarithm
-PolyLog
-BigFloat
