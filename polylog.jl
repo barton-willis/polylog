@@ -245,7 +245,7 @@ function polylog2_helper(q0::Number, x::Number)
     q2 = (q0^3) / 9  # was x^3/(9*(1-x/2)^3)
     #was h = q0 + (q1 + q2) # not sure of best order to sum.
     h = KahanSum(q2,q1,q0) #q0 - q0^2/4 + q0^3/9
-    N = 2^24 # magic number--it is a power of two for no particular reason
+    N = 2^24 # magic number: maximum number of iterations in the loop
     k = zero(N)
     streak = zero(N)
     ks = zero(T) #Kahan summation corrector
@@ -254,7 +254,7 @@ function polylog2_helper(q0::Number, x::Number)
     s2 = s0^3
     ε = eps(T)
     he = zero(T) # upper limit for error in h
-    while k < N && streak < 5 && isfinite(h)  #magic number 5
+    while k < N && streak < 5 && isfinite(h)  # magic number 5
         #was q3 = (-(k+1)*(k+2)*q0*x^3+(k+2)^2*q1*(x-2)*x^2+(k+3)*(k+4)*q2*(x-2)^2*x)/((k+4)^2*(x-2)^3)
 
         # We need to be careful with contagion. But these do Int64*float, and I think
