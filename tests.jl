@@ -292,17 +292,16 @@ myprintln("Test DLMF identity 25.12.E5")
 end
 
 #http://dlmf.nist.gov/25.12.E7
-function dlmf_25_12_E7(T,x)
-    pie = convert(T,pi)
-    rd(real(polylog2(cis(x))),  pie*(pie/6 - x/2) + x^2/4)
+function dlmf_25_12_E7(T,π,θ)
+    rd(real(polylog2(cis(θ))),  π*(π/6 - θ/2) + θ^2/4)
  end
  
  function polylog2_test4(T::DataType, n::Int64)
     OK = true
-    pie = convert(T,pi)
+    π = convert(T,pi)
     for i = 0 : n
-        x = (2*pie*i)/n
-        OK = OK && (dlmf_25_12_E7(T,x) < 32)
+        θ = (2*π*i)/n
+        OK = OK && (dlmf_25_12_E7(T,π,θ) < 16)
     end
     OK
  end
@@ -310,10 +309,10 @@ function dlmf_25_12_E7(T,x)
 println()
 myprintln("Test DLMF identity 25.12.E7")
 @testset begin 
-    @test polylog2_test4(Float16,100) == true
-    @test polylog2_test4(Float32,100) == true
-    @test polylog2_test4(Float64,100) == true
-    @test polylog2_test4(BigFloat,100) == true
+    @test polylog2_test4(Float16,10^4) == true
+    @test polylog2_test4(Float32,10^4) == true
+    @test polylog2_test4(Float64,10^4) == true
+    @test polylog2_test4(BigFloat,10^4) == true
 end
 
 #--------------
